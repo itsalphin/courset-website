@@ -14,9 +14,9 @@ export default function Reveal({ children, delay = 0, direction = 'up', classNam
   const prefersReduced = useReducedMotion();
 
   const directionMap = {
-    up: { y: 24, x: 0 },
-    left: { x: -24, y: 0 },
-    right: { x: 24, y: 0 },
+    up: { y: 16, x: 0 },
+    left: { x: -16, y: 0 },
+    right: { x: 16, y: 0 },
   };
 
   const offset = directionMap[direction];
@@ -26,7 +26,7 @@ export default function Reveal({ children, delay = 0, direction = 'up', classNam
       initial={prefersReduced ? { opacity: 1 } : { opacity: 0, ...offset }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={prefersReduced ? { duration: 0 } : { duration: DURATION.normal, ease: EASE, delay }}
+      transition={prefersReduced ? { duration: 0 } : { duration: 0.35, ease: EASE, delay }}
       className={className}
     >
       {children}
