@@ -40,7 +40,7 @@ export default function CollectionsPage() {
           ctaHref="#victory-pieces"
           imageSide="right"
           bgClass="bg-[#F5F3F0]"
-          imageSrc="/images/hero-victory.png"
+          imageSrc="/images/hero-victory.jpg"
         />
         <section id="victory-pieces" className="bg-[var(--color-bg-primary)]" style={{ padding: 'var(--space-section) 0' }}>
           <div className="mx-auto px-[var(--gutter)]" style={{ maxWidth: 'var(--content-width)' }}>
