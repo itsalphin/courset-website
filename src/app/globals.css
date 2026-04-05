@@ -1,26 +1,120 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* === COURSET Color System === */
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F7F7F7;
+    --color-bg-tertiary: #ECECEC;
+    --color-surface: #E5E5E5;
+    --color-bg-elevated: #FFFFFF;
+    --color-bg-inverse: #1A1A1A;
+
+    --color-text-primary: #1A1A1A;
+    --color-text-secondary: #6B6B6B;
+    --color-text-tertiary: #767676;
+    --color-text-inverse: #F7F7F7;
+
+    --color-accent: #C9A96E;
+    --color-accent-text: #8B7335;
+    --color-accent-hover: #B8944F;
+    --color-accent-subtle: rgba(201, 169, 110, 0.1);
+
+    --color-border: #E0E0E0;
+    --color-divider: #F0F0F0;
+    --color-overlay: rgba(0, 0, 0, 0.45);
+
+    --color-success: #4A7C59;
+    --color-error: #C44536;
+
+    /* === Karat Color Swatches === */
+    --gold-10k: #E8D5A3;
+    --gold-14k: #E6C87E;
+    --gold-18k: #DAA520;
+    --gold-24k: #FFD700;
+    --white-gold: #E8E8E8;
+    --rose-gold: #E8B4A0;
+    --platinum: #D4D4D8;
+
+    /* === Typography === */
+    --font-display: var(--font-cormorant), Georgia, serif;
+    --font-body: var(--font-dm-sans), 'Helvetica Neue', sans-serif; /* Manrope */
+
+    --text-hero: clamp(3.5rem, 8vw, 7rem);
+    --text-section-title: clamp(2rem, 4vw, 3.5rem);
+    --text-collection-title: clamp(1.75rem, 3vw, 2.5rem);
+    --text-body-lg: clamp(1.125rem, 1.5vw, 1.25rem);
+    --text-body: 1rem;
+    --text-caption: 0.875rem;
+    --text-label: 0.75rem;
+
+    /* === Spacing === */
+    --space-section: clamp(5rem, 12vw, 10rem);
+    --space-block: clamp(3rem, 6vw, 5rem);
+    --space-element: clamp(1.5rem, 3vw, 2.5rem);
+
+    /* === Layout === */
+    --max-width: 1440px;
+    --content-width: 1200px;
+    --narrow-width: 768px;
+    --gutter: clamp(1.25rem, 4vw, 3rem);
+
+    /* === Shadows === */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.1);
+
+    /* === Transitions === */
+    --transition-fast: 150ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-normal: 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-slow: 500ms cubic-bezier(0.25, 0.1, 0.25, 1);
   }
 }
 
+@theme inline {
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-bg-tertiary: var(--color-bg-tertiary);
+  --color-surface: var(--color-surface);
+  --color-bg-elevated: var(--color-bg-elevated);
+  --color-bg-inverse: var(--color-bg-inverse);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-accent: var(--color-accent);
+  --color-accent-text: var(--color-accent-text);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-subtle: var(--color-accent-subtle);
+  --color-border: var(--color-border);
+  --color-divider: var(--color-divider);
+  --color-overlay: var(--color-overlay);
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-accent-subtle);
+  color: var(--color-text-primary);
 }
