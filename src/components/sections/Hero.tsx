@@ -25,9 +25,9 @@ export default function Hero() {
       <motion.div
         className="absolute inset-0"
         style={{ y }}
-        initial={{ opacity: 0, scale: 1.08 }}
-        animate={imageLoaded ? { opacity: 1, scale: 1 } : {}}
-        transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
+        initial={{ opacity: 0 }}
+        animate={imageLoaded ? { opacity: 1 } : {}}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
       >
         <Image
           src="/images/hero-bg.jpg"
@@ -49,7 +49,7 @@ export default function Hero() {
             className="block font-[family-name:var(--font-body)] text-[0.75rem] md:text-[0.85rem] font-light uppercase tracking-[0.35em] text-white/60 mb-6"
             initial={{ opacity: 0, y: 16 }}
             animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.3 }}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.15 }}
           >
             Introducing
           </motion.span>
@@ -59,7 +59,7 @@ export default function Hero() {
             style={{ fontSize: 'clamp(3.5rem, 9vw, 7.5rem)' }}
             initial={{ opacity: 0, y: 28 }}
             animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: EASE, delay: textDelay === 999 ? 999 : 0.5 }}
+            transition={{ duration: 0.8, ease: EASE, delay: textDelay === 999 ? 999 : 0.25 }}
           >
             COURSET
           </motion.h1>
@@ -68,7 +68,7 @@ export default function Hero() {
             className="mt-5 font-[family-name:var(--font-display)] italic text-xl md:text-2xl text-white/85 tracking-[0.04em]"
             initial={{ opacity: 0, y: 20 }}
             animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.7 }}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.35 }}
           >
             From First Win to Legacy
           </motion.p>
@@ -77,7 +77,7 @@ export default function Hero() {
             className="mt-6 font-[family-name:var(--font-body)] text-[1rem] md:text-[1.1rem] text-white/55 leading-[1.75] max-w-[42ch]"
             initial={{ opacity: 0, y: 18 }}
             animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.85 }}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.45 }}
           >
             Designed for those who play with purpose — crafted to carry every victory, milestone, and memory.
           </motion.p>
@@ -86,7 +86,7 @@ export default function Hero() {
             className="mt-10 flex flex-col sm:flex-row items-start gap-4"
             initial={{ opacity: 0, y: 16 }}
             animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 1.0 }}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.55 }}
           >
             <a
               href="/collections"
@@ -106,7 +106,7 @@ export default function Hero() {
             className="mt-6 font-[family-name:var(--font-body)] text-[0.65rem] uppercase tracking-[0.2em] text-white/35"
             initial={{ opacity: 0 }}
             animate={imageLoaded ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, ease: EASE, delay: textDelay === 999 ? 999 : 1.15 }}
+            transition={{ duration: 0.6, ease: EASE, delay: textDelay === 999 ? 999 : 0.65 }}
           >
             Handcrafted in gold &middot; Personalized &middot; Made to last
           </motion.p>
@@ -117,7 +117,7 @@ export default function Hero() {
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}
         animate={imageLoaded ? { opacity: 1 } : {}}
-        transition={{ delay: textDelay === 999 ? 999 : 1.3, duration: 0.5 }}
+        transition={{ delay: textDelay === 999 ? 999 : 0.75, duration: 0.5 }}
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
