@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 
 interface AnimatedImageProps {
   src: string;
@@ -29,19 +28,8 @@ export default function AnimatedImage({
 }: AnimatedImageProps) {
   const [loaded, setLoaded] = useState(false);
 
-  // Fallback: force show after 3s even if onLoad doesn't fire
-  useEffect(() => {
-    const timer = setTimeout(() => setLoaded(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <motion.div
-      className="absolute inset-0"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: loaded ? 1 : 0 }}
-      transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-    >
+    <div className="absolute inset-0">
       <Image
         src={src}
         alt={alt}
@@ -49,12 +37,11 @@ export default function AnimatedImage({
         width={!fill ? width : undefined}
         height={!fill ? height : undefined}
         sizes={sizes}
-        className={className}
+        className={`${className} transition-opacity duration-300 ease-out ${loaded ? 'opacity-100' : 'opacity-0'}`}
         priority={priority}
         quality={quality}
         onLoad={() => setLoaded(true)}
-        loading={priority ? 'eager' : 'lazy'}
       />
-    </motion.div>
+    </div>
   );
 }
