@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
@@ -8,18 +9,25 @@ import { EASE } from '@/lib/animations';
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
   });
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
+  // Text only appears after image loads — synced entrance
+  const textDelay = imageLoaded ? 0 : 999;
+
   return (
-    <section ref={ref} className="relative h-svh w-full overflow-hidden flex items-end md:items-center">
+    <section ref={ref} className="relative h-svh w-full overflow-hidden flex items-end md:items-center bg-[#2A2722]">
       {/* Background image with parallax */}
       <motion.div
         className="absolute inset-0"
         style={{ y }}
+        initial={{ opacity: 0, scale: 1.08 }}
+        animate={imageLoaded ? { opacity: 1, scale: 1 } : {}}
+        transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
       >
         <Image
           src="/images/hero-bg.jpg"
@@ -29,63 +37,56 @@ export default function Hero() {
           className="object-cover object-[70%_center] md:object-center"
           priority
           quality={85}
-          placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AmaZqK3sraG2itzI0aBS5YDJx1OwqbooD/9k="
+          onLoad={() => setImageLoaded(true)}
         />
-        {/* Gradient overlay — stronger on the left for text, lighter on mobile to show model */}
         <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-black/55 via-black/30 to-black/10" />
       </motion.div>
 
-      {/* Content — left-aligned */}
+      {/* Content — synced with image load */}
       <div className="relative z-10 px-[var(--gutter)] pb-28 md:pb-0 w-full" style={{ maxWidth: 'var(--max-width)', margin: '0 auto' }}>
         <div className="max-w-2xl">
-          {/* Intro line */}
           <motion.span
             className="block font-[family-name:var(--font-body)] text-[0.75rem] md:text-[0.85rem] font-light uppercase tracking-[0.35em] text-white/60 mb-6"
             initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
+            animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.3 }}
           >
             Introducing
           </motion.span>
 
-          {/* Main title */}
           <motion.h1
             className="font-[family-name:var(--font-display)] font-light tracking-[0.06em] text-white leading-[0.95]"
             style={{ fontSize: 'clamp(3.5rem, 9vw, 7.5rem)' }}
             initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: EASE, delay: 0.25 }}
+            animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: EASE, delay: textDelay === 999 ? 999 : 0.5 }}
           >
             COURSET
           </motion.h1>
 
-          {/* Tagline */}
           <motion.p
             className="mt-5 font-[family-name:var(--font-display)] italic text-xl md:text-2xl text-white/85 tracking-[0.04em]"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE, delay: 0.45 }}
+            animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.7 }}
           >
             From First Win to Legacy
           </motion.p>
 
-          {/* Subtext */}
           <motion.p
             className="mt-6 font-[family-name:var(--font-body)] text-[1rem] md:text-[1.1rem] text-white/55 leading-[1.75] max-w-[42ch]"
             initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE, delay: 0.6 }}
+            animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 0.85 }}
           >
             Designed for those who play with purpose — crafted to carry every victory, milestone, and memory.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div
             className="mt-10 flex flex-col sm:flex-row items-start gap-4"
             initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE, delay: 0.75 }}
+            animate={imageLoaded ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE, delay: textDelay === 999 ? 999 : 1.0 }}
           >
             <a
               href="/collections"
@@ -101,24 +102,22 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          {/* Trust line */}
           <motion.p
             className="mt-6 font-[family-name:var(--font-body)] text-[0.65rem] uppercase tracking-[0.2em] text-white/35"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: EASE, delay: 0.9 }}
+            animate={imageLoaded ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, ease: EASE, delay: textDelay === 999 ? 999 : 1.15 }}
           >
             Handcrafted in gold &middot; Personalized &middot; Made to last
           </motion.p>
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.1, duration: 0.5 }}
+        animate={imageLoaded ? { opacity: 1 } : {}}
+        transition={{ delay: textDelay === 999 ? 999 : 1.3, duration: 0.5 }}
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}

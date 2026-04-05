@@ -1,11 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Reveal from '@/components/ui/Reveal';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Button from '@/components/ui/Button';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 
 const collections = [
   {
@@ -66,10 +66,9 @@ export default function CollectionPreview() {
               >
                 {/* Image */}
                 <div className="aspect-[4/5] relative mb-5 overflow-hidden">
-                  <Image
+                  <AnimatedImage
                     src={col.image}
                     alt={`${col.name} Collection`}
-                    fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />

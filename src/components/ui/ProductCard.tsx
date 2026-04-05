@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Box, Smartphone, ShoppingBag } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useCart } from '@/lib/cart-context';
+import AnimatedImage from './AnimatedImage';
 import PriceDisplay from './PriceDisplay';
 
 interface ProductCardProps {
@@ -28,10 +28,9 @@ export default function ProductCard({ product, size = 'default', onView3D }: Pro
         }`}
         style={{ boxShadow: 'var(--shadow-sm)' }}
       >
-        <Image
+        <AnimatedImage
           src={product.image}
           alt={product.name}
-          fill
           sizes={size === 'large' ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 50vw, 33vw'}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />

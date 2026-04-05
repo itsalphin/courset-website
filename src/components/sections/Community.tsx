@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import Reveal from '@/components/ui/Reveal';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import SectionLabel from '@/components/ui/SectionLabel';
 
 const testimonials = [
@@ -63,10 +63,9 @@ export default function Community() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-16">
             {communityImages.map((img, i) => (
               <div key={i} className={`${img.aspect} relative overflow-hidden`}>
-                <Image
+                <AnimatedImage
                   src={img.src}
                   alt={`COURSET community ${i + 1}`}
-                  fill
                   sizes="(max-width: 768px) 50vw, 25vw"
                   className="object-cover transition-transform duration-700 ease-out hover:scale-105"
                 />
