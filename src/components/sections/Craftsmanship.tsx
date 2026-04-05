@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import { Gem, Hammer, FileCheck, Shield } from 'lucide-react';
 import Reveal from '@/components/ui/Reveal';
 import SectionLabel from '@/components/ui/SectionLabel';
@@ -69,12 +69,10 @@ export default function Craftsmanship() {
         {/* Macro image */}
         <Reveal>
           <div className="w-full aspect-[21/7] relative overflow-hidden mb-14">
-            <Image
+            <AnimatedImage
               src="/images/macro-detail.jpg"
               alt="Diamond setting detail"
-              fill
               sizes="100vw"
-              className="object-cover"
             />
           </div>
         </Reveal>

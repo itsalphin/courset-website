@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import { motion } from 'framer-motion';
 import { Minus, Plus, X, ShoppingBag } from 'lucide-react';
 import { EASE } from '@/lib/animations';
@@ -57,10 +57,9 @@ export default function CartPage() {
                   >
                     {/* Image */}
                     <div className="w-28 h-28 md:w-36 md:h-36 relative shrink-0 bg-[#FAFAF8]">
-                      <Image
+                      <AnimatedImage
                         src={item.product.image}
                         alt={item.product.name}
-                        fill
                         sizes="150px"
                         className="object-contain p-2"
                       />

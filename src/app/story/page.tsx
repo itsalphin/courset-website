@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import ConciergeButton from '@/components/ui/ConciergeButton';
@@ -39,7 +39,7 @@ export default function StoryPage() {
         {/* Full-width editorial image */}
         <Reveal>
           <div className="w-full aspect-[21/7] relative overflow-hidden">
-            <Image
+            <AnimatedImage
               src="/images/story-hero-banner.jpg"
               alt="COURSET story"
               fill
@@ -79,7 +79,7 @@ export default function StoryPage() {
               </Reveal>
               <Reveal delay={0.15} className="md:col-span-5">
                 <div className="aspect-[4/5] relative overflow-hidden">
-                  <Image
+                  <AnimatedImage
                     src="/images/born-on-court.jpg"
                     alt="Born on the court"
                     fill

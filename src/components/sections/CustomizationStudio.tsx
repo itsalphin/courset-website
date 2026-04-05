@@ -1,7 +1,7 @@
 'use client';
 
 import { useReducer } from 'react';
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import Reveal from '@/components/ui/Reveal';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Button from '@/components/ui/Button';
@@ -91,7 +91,7 @@ export default function CustomizationStudio({ compact = false }: CustomizationSt
               {/* Show selected product image */}
               <div className="aspect-square relative overflow-hidden bg-[#FAFAF8]">
                 {selectedProduct && (
-                  <Image
+                  <AnimatedImage
                     src={selectedProduct.image}
                     alt={selectedProduct.name}
                     fill
@@ -152,7 +152,7 @@ export default function CustomizationStudio({ compact = false }: CustomizationSt
           <div className="lg:col-span-3 lg:sticky lg:top-24 lg:self-start" style={{ maxHeight: 'calc(100vh - 6rem)' }}>
             <div className="w-full relative overflow-hidden bg-[#FAFAF8]" style={{ height: 'calc(100vh - 16rem)' }}>
               {selectedProduct && (
-                <Image
+                <AnimatedImage
                   src={selectedProduct.image}
                   alt={selectedProduct.name}
                   fill

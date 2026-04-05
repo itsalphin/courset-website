@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import Reveal from '@/components/ui/Reveal';
 import SectionLabel from '@/components/ui/SectionLabel';
 
@@ -33,12 +33,10 @@ export default function BrandStory() {
           {/* Image — 5 cols */}
           <Reveal delay={0.15} className="md:col-span-5">
             <div className="aspect-[4/5] relative overflow-hidden">
-              <Image
+              <AnimatedImage
                 src="/images/story-beyond-court.jpg"
                 alt="Beyond the court — COURSET"
-                fill
                 sizes="(max-width: 768px) 100vw, 40vw"
-                className="object-cover"
               />
             </div>
           </Reveal>

@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import { motion } from 'framer-motion';
 import { products } from '@/lib/products';
 import type { Product } from '@/lib/types';
@@ -46,12 +46,10 @@ export default function ProductSelector({ selectedId, onSelect }: ProductSelecto
                   whileTap={{ scale: 0.98 }}
                 >
                   <div className="aspect-square relative">
-                    <Image
+                    <AnimatedImage
                       src={product.image}
                       alt={product.name}
-                      fill
                       sizes="120px"
-                      className="object-cover"
                     />
                   </div>
                   <div className="px-1.5 py-1.5 bg-white">

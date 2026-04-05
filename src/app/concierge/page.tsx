@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import ConciergeButton from '@/components/ui/ConciergeButton';
@@ -48,7 +48,7 @@ export default function ConciergePage() {
         {/* Full width editorial image */}
         <Reveal>
           <div className="w-full aspect-[21/7] relative overflow-hidden">
-            <Image
+            <AnimatedImage
               src="/images/concierge-hero-banner.jpg"
               alt="COURSET concierge"
               fill

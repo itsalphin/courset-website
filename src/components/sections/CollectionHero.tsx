@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import { ArrowRight } from 'lucide-react';
 import Reveal from '@/components/ui/Reveal';
 
@@ -58,12 +58,10 @@ export default function CollectionHero({
 
   const imageContent = (
     <div className="relative w-full h-full min-h-[400px] md:min-h-[600px] overflow-hidden">
-      <Image
+      <AnimatedImage
         src={imageSrc}
         alt={`${name} Collection`}
-        fill
         sizes="(max-width: 768px) 100vw, 50vw"
-        className="object-cover"
         priority
         quality={85}
       />

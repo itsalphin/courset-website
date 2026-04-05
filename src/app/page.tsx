@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import AnimatedImage from '@/components/ui/AnimatedImage';
 import { ArrowRight } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
@@ -33,7 +33,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
               <Reveal>
                 <div className="aspect-[4/5] relative overflow-hidden">
-                  <Image
+                  <AnimatedImage
                     src="/images/story-teaser.jpg"
                     alt="COURSET craftsmanship"
                     fill
@@ -115,7 +115,7 @@ export default function Home() {
               </Reveal>
               <Reveal delay={0.15}>
                 <div className="aspect-[4/5] relative overflow-hidden">
-                  <Image
+                  <AnimatedImage
                     src="/images/concierge-teaser.jpg"
                     alt="COURSET concierge service"
                     fill
