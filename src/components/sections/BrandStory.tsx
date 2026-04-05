@@ -55,7 +55,7 @@ export default function BrandStory() {
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload="auto"
                 poster="/images/story-beyond-court.jpg"
               >
                 <source src="/videos/craftsmanship.mp4" type="video/mp4" />
