@@ -36,7 +36,7 @@ export default function Hero() {
           sizes="100vw"
           className="object-cover object-[70%_center] md:object-center"
           priority
-          quality={85}
+          quality={90}
           onLoad={() => setImageLoaded(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-black/55 via-black/30 to-black/10" />
