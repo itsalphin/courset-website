@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, ShoppingBag } from 'lucide-react';
+import { useLenis } from 'lenis/react';
 import { EASE } from '@/lib/animations';
 import { useAuth } from '@/lib/auth-context';
 import { useCart } from '@/lib/cart-context';
@@ -23,6 +24,7 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user } = useAuth();
   const { totalItems } = useCart();
+  const lenis = useLenis();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -30,14 +32,20 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Pause Lenis when mobile menu is open
   useEffect(() => {
     if (mobileOpen) {
+      lenis?.stop();
       document.body.style.overflow = 'hidden';
     } else {
+      lenis?.start();
       document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileOpen]);
+    return () => {
+      lenis?.start();
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen, lenis]);
 
   const useDark = variant === 'dark' || scrolled;
 

@@ -102,16 +102,7 @@ body {
   font-family: var(--font-body);
 }
 
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}
+/* Lenis handles smooth scroll — no CSS scroll-behavior needed */
 
 /* Selection styling */
 ::selection {
