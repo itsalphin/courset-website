@@ -1,7 +1,15 @@
 'use client';
 
-import { ReactLenis } from 'lenis/react';
+import { ReactLenis, useLenis } from 'lenis/react';
 import { useReducedMotion } from 'framer-motion';
+import { ScrollTrigger } from '@/lib/gsap';
+
+function ScrollTriggerSync() {
+  useLenis(() => {
+    ScrollTrigger.update();
+  });
+  return null;
+}
 
 export default function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   const prefersReduced = useReducedMotion();
@@ -22,6 +30,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
         infinite: false,
       }}
     >
+      <ScrollTriggerSync />
       {children}
     </ReactLenis>
   );
