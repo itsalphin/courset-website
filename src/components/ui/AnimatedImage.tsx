@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { getBlurDataURL } from '@/lib/blur-placeholders';
 
 interface AnimatedImageProps {
   src: string;
@@ -27,6 +28,7 @@ export default function AnimatedImage({
   quality,
 }: AnimatedImageProps) {
   const [loaded, setLoaded] = useState(false);
+  const blurDataURL = getBlurDataURL(src);
 
   return (
     <div className="absolute inset-0">
@@ -41,6 +43,7 @@ export default function AnimatedImage({
         priority={priority}
         quality={quality}
         onLoad={() => setLoaded(true)}
+        {...(blurDataURL ? { placeholder: 'blur' as const, blurDataURL } : {})}
       />
     </div>
   );
