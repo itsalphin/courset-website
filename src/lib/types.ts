@@ -1,3 +1,16 @@
+export interface ProductImage {
+  src: string;
+  alt: string;
+  label?: string;
+}
+
+export interface ProductSpecs {
+  metalType?: string;
+  weight?: string;
+  dimensions?: string;
+  chain?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -14,6 +27,9 @@ export interface Product {
   image: string;
   complementaryIds: string[];
   diamondSpec?: string;
+  tagline?: string;
+  gallery?: ProductImage[];
+  specs?: ProductSpecs;
 }
 
 export interface CustomizationState {

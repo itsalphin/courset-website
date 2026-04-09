@@ -30,6 +30,7 @@ const BASE_PRICES: Record<string, number> = {
   'grand-slam-pendant': 12000,
   'legacy-championship-bracelet': 9800,
   'bespoke-commission': 7000,
+  'court-royale-pendant': 980,
 };
 
 const KARAT_MULTIPLIERS: Record<number, number> = {

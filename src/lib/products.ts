@@ -98,6 +98,38 @@ export const products: Product[] = [
     image: '/images/drop-shot-charm.jpg',
     complementaryIds: ['rally-bracelet', 'court-pendant'],
   },
+  {
+    id: 'court-royale-pendant',
+    name: 'Court Royale',
+    price: 980,
+    priceDisplay: '$980',
+    collection: 'victory',
+    category: 'pendant',
+    description: 'A miniature pickleball rendered in polished 14K gold — every hole precision-cut, every curve hand-finished. The Court Royale captures the soul of the game in a single, wearable sphere. Suspended from a delicate cable chain, it catches the light the way a rally catches your breath.',
+    tagline: 'The game, distilled.',
+    badges: [],
+    occasions: ['self-gift', 'gift', 'birthday', 'tournament-win'],
+    customizable: false,
+    has3D: false,
+    hasAR: false,
+    image: '/images/court-royale-hero.jpg',
+    complementaryIds: ['rally-bracelet', 'match-point-studs', 'first-win-ring'],
+    gallery: [
+      { src: '/images/court-royale-hero.jpg', alt: 'Court Royale pendant — front view on white background with chain', label: 'Front View' },
+      { src: '/images/court-royale-gradient.jpg', alt: 'Court Royale pendant — hanging from chain on warm gradient background', label: 'Gradient' },
+      { src: '/images/court-royale-on-model.jpg', alt: 'Court Royale pendant — worn on model with white top', label: 'On Model' },
+      { src: '/images/court-royale-marble.jpg', alt: 'Court Royale pendant — laid on linen fabric with rose petal', label: 'Lifestyle' },
+      { src: '/images/court-royale-velvet.jpg', alt: 'Court Royale pendant — dramatic shot on dark velvet', label: 'Velvet' },
+      { src: '/images/court-royale-sport.jpg', alt: 'Court Royale pendant — on pickleball paddle with balls in background', label: 'On Court' },
+      { src: '/images/court-royale-banner.jpg', alt: 'Court Royale pendant — wide banner view hanging from chain', label: 'Banner' },
+    ],
+    specs: {
+      metalType: '14K Yellow Gold',
+      weight: '3.2g',
+      dimensions: '12mm sphere',
+      chain: '18" cable chain with lobster clasp',
+    },
+  },
 
   // === SIGNATURE COLLECTION ($2,000–$7,000) ===
   {

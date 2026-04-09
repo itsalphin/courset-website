@@ -15,9 +15,18 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, size = 'default', onView3D }: ProductCardProps) {
   const { dispatch } = useCart();
+  const hasDetailPage = product.gallery && product.gallery.length > 0;
+
+  const handleCardClick = () => {
+    if (hasDetailPage) {
+      window.location.href = `/product/${product.id}`;
+    }
+  };
+
   return (
     <motion.article
       className="group cursor-pointer"
+      onClick={handleCardClick}
       whileHover={{ scale: 1.02, y: -4 }}
       transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
     >
