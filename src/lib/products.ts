@@ -121,6 +121,7 @@ export const products: Product[] = [
       { src: '/images/court-royale-marble.jpg', alt: 'Court Royale pendant — laid on linen fabric with rose petal', label: 'Lifestyle' },
       { src: '/images/court-royale-velvet.jpg', alt: 'Court Royale pendant — dramatic shot on dark velvet', label: 'Velvet' },
       { src: '/images/court-royale-sport.jpg', alt: 'Court Royale pendant — on pickleball paddle with balls in background', label: 'On Court' },
+      { src: '/images/court-royale-macro.jpg', alt: 'Court Royale pendant — macro detail of gold surface and holes', label: 'Detail' },
     ],
     specs: {
       metalType: '14K Yellow Gold',
