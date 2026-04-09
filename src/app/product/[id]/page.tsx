@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: ProductPageProps) {
   if (!product) return {};
 
   return {
-    title: `${product.name} — COURSET`,
+    title: `${product.name} GUP0002 — COURSET`,
     description: product.description?.substring(0, 160),
     openGraph: {
-      title: `${product.name} — COURSET`,
+      title: `${product.name} GUP0002 — COURSET`,
       description: product.tagline || product.description?.substring(0, 100),
       images: [{ url: product.image }],
     },
