@@ -65,7 +65,7 @@ export default function ProductDetailView({ product, relatedProducts }: ProductD
           <motion.div {...entrance} transition={{ duration: 0.5 }}>
             {/* Main image with arrows and swipe */}
             <div
-              className="relative aspect-square bg-[var(--color-bg-secondary)] overflow-hidden select-none"
+              className="relative aspect-[3/4] bg-[var(--color-bg-secondary)] overflow-hidden select-none"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -85,7 +85,7 @@ export default function ProductDetailView({ product, relatedProducts }: ProductD
                     quality={85}
                     priority
                     sizes="(max-width: 768px) 100vw, 55vw"
-                    className="object-contain p-6"
+                    className="object-cover"
                   />
                 </motion.div>
               </AnimatePresence>
