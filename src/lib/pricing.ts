@@ -31,6 +31,7 @@ const BASE_PRICES: Record<string, number> = {
   'legacy-championship-bracelet': 9800,
   'bespoke-commission': 7000,
   'court-royale-pendant': 980,
+  'court-royale-ii-pendant': 1080,
   'rally-drops-earrings': 720,
   'ace-studs-earrings': 580,
 };
