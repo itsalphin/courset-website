@@ -28,6 +28,7 @@ export interface Product {
   complementaryIds: string[];
   diamondSpec?: string;
   tagline?: string;
+  productCode?: string;
   gallery?: ProductImage[];
   specs?: ProductSpecs;
 }

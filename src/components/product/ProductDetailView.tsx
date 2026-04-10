@@ -160,9 +160,11 @@ export default function ProductDetailView({ product, relatedProducts }: ProductD
             </h1>
 
             {/* Product code */}
-            <span className="font-[family-name:var(--font-body)] text-[0.65rem] tracking-[0.15em] text-[var(--color-text-tertiary)] mt-1 block">
-              GUP0002
-            </span>
+            {product.productCode && (
+              <span className="font-[family-name:var(--font-body)] text-[0.65rem] tracking-[0.15em] text-[var(--color-text-tertiary)] mt-1 block">
+                {product.productCode}
+              </span>
+            )}
 
             {product.tagline && (
               <p className="font-[family-name:var(--font-display)] italic text-[var(--color-text-secondary)] mt-3 text-lg">

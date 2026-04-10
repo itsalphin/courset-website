@@ -100,6 +100,7 @@ export const products: Product[] = [
   },
   {
     id: 'court-royale-pendant',
+    productCode: 'GUP0002',
     name: 'Court Royale',
     price: 980,
     priceDisplay: '$980',
@@ -131,6 +132,7 @@ export const products: Product[] = [
   },
   {
     id: 'rally-drops-earrings',
+    productCode: 'GUE0001',
     name: 'Rally Drops',
     price: 720,
     priceDisplay: '$720',
@@ -163,6 +165,7 @@ export const products: Product[] = [
   },
   {
     id: 'ace-studs-earrings',
+    productCode: 'GUE0002',
     name: 'Ace Studs',
     price: 580,
     priceDisplay: '$580',
