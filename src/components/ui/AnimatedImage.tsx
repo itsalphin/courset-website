@@ -14,6 +14,7 @@ interface AnimatedImageProps {
   className?: string;
   priority?: boolean;
   quality?: number;
+  eager?: boolean;
 }
 
 export default function AnimatedImage({
@@ -26,6 +27,7 @@ export default function AnimatedImage({
   className = 'object-cover',
   priority = false,
   quality,
+  eager = false,
 }: AnimatedImageProps) {
   const [loaded, setLoaded] = useState(false);
   const blurDataURL = getBlurDataURL(src);
@@ -39,9 +41,10 @@ export default function AnimatedImage({
         width={!fill ? width : undefined}
         height={!fill ? height : undefined}
         sizes={sizes}
-        className={`${className} transition-opacity duration-300 ease-out ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`${className} transition-opacity duration-200 ease-out ${loaded ? 'opacity-100' : 'opacity-0'}`}
         priority={priority}
         quality={quality}
+        loading={priority || eager ? 'eager' : 'lazy'}
         onLoad={() => setLoaded(true)}
         {...(blurDataURL ? { placeholder: 'blur' as const, blurDataURL } : {})}
       />
