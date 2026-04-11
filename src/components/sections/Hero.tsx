@@ -51,7 +51,7 @@ export default function Hero() {
         duration: 0.5,
       }, 0.2);
 
-      // SplitText headline — characters from center
+      // SplitText headline — characters left to right
       SplitText.create(headlineRef.current!, {
         type: 'chars',
         autoSplit: true,
@@ -61,7 +61,7 @@ export default function Hero() {
             y: 60,
             rotateX: -60,
             duration: 0.8,
-            stagger: { amount: 0.5, from: 'center' },
+            stagger: { amount: 0.5, from: 'start' },
             ease: 'power4.out',
           }, 0.3);
         },
