@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 import { useReducedMotion } from 'framer-motion';
@@ -17,12 +17,20 @@ export default function Hero() {
   const indicatorRef = useRef<HTMLDivElement>(null);
   const imageWrapRef = useRef<HTMLDivElement>(null);
 
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [ready, setReady] = useState(false);
   const prefersReduced = useReducedMotion();
 
+  // Start animation when image loads OR after 1.5s fallback
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleImageLoad = useCallback(() => setReady(true), []);
+
   // GSAP entrance timeline + scroll exit
-  useGSAP(() => {
-    if (prefersReduced || !imageLoaded) return;
+  useEffect(() => {
+    if (prefersReduced || !ready) return;
 
     const ctx = gsap.context(() => {
       // === ENTRANCE TIMELINE ===
@@ -113,7 +121,8 @@ export default function Hero() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, { scope: containerRef, dependencies: [imageLoaded, prefersReduced] });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, prefersReduced]);
 
   // If reduced motion, show everything immediately
   const reducedStyle = prefersReduced ? { opacity: 1, transform: 'none' } : undefined;
@@ -130,7 +139,7 @@ export default function Hero() {
           className="object-cover object-[70%_center] md:object-center"
           priority
           quality={90}
-          onLoad={() => setImageLoaded(true)}
+          onLoad={handleImageLoad}
         />
         <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-black/55 via-black/30 to-black/10" />
       </div>
