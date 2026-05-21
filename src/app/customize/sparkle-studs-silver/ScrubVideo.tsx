@@ -142,9 +142,9 @@ export default function ScrubVideo({ src, poster, label = 'Drag to explore the p
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      className={`relative aspect-square w-full overflow-hidden bg-[var(--color-bg-secondary)] select-none ${
+      className={`relative w-full overflow-hidden bg-[var(--color-bg-secondary)] select-none ${
         dragging ? 'cursor-grabbing' : 'cursor-ew-resize'
-      } ${className}`}
+      } ${className || 'aspect-square'}`}
       style={{ touchAction: 'none' }}
     >
       <video

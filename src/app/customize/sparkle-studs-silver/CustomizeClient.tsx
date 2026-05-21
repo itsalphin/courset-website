@@ -66,9 +66,11 @@ export default function CustomizeClient() {
           <div>
             <div className="relative">
               {activeMedia === 0 ? (
-                <ScrubVideo src={cfg.video} poster={cfg.poster} label={`${cfg.name} — drag to explore`} />
+                // aspect matches the video's real content region (536×720) so object-cover
+                // crops the baked-in black pillarbox bars exactly off both sides.
+                <ScrubVideo src={cfg.video} poster={cfg.poster} label={`${cfg.name} — drag to explore`} className="aspect-[536/720]" />
               ) : (
-                <div className="relative aspect-square w-full overflow-hidden bg-[var(--color-bg-secondary)]">
+                <div className="relative aspect-[536/720] w-full overflow-hidden bg-[var(--color-bg-secondary)]">
                   <Image
                     src={cfg.images[activeMedia - 1].src}
                     alt={cfg.images[activeMedia - 1].alt}
