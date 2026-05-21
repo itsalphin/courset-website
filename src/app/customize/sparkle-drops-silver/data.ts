@@ -32,9 +32,7 @@ export const sparkleDropsSilver = {
   description:
     'White gold lever-back drop earrings with fully diamond-set pickleball spheres. The cool rhodium finish gives these drops an icy elegance — perfect for the player who prefers silver to gold but refuses to compromise on sparkle. Secure lever-back closure keeps each sphere swinging in motion.',
 
-  // TODO: confirm this is the correct uploaded Sparkle Drops video.
-  // It is the most-recently-added file in /public/videos (uploaded 2026-05-21 19:34).
-  video: '/videos/nimbus-80b72e5d-0dcd-4341-8410-f9bb6bf5dbe2.mp4',
+  video: '/videos/sparkle-drops-silver.mp4',
   // Poster frame shown before the video is seekable.
   poster: '/images/sparkle-drops-silver-hero_white.jpg',
 

@@ -32,9 +32,7 @@ export const sparkleStudsSilver = {
   description:
     'The white gold edition of our diamond-set pickleball studs — cooler in tone, equally brilliant. Rhodium-plated for lasting polish, these studs pair effortlessly with everything from courtside whites to evening black. Push-back posts engineered for all-day comfort.',
 
-  // TODO: confirm this is the correct uploaded Sparkle Studs video.
-  // It is the most-recently-added file in /public/videos (uploaded 2026-05-21).
-  video: '/videos/nimbus-3e51e888-acdd-43b1-bcf2-644b2e393ff9.mp4',
+  video: '/videos/sparkle-studs-silver.mp4',
   // Poster frame shown before the video is seekable.
   poster: '/images/sparkle-studs-silver-hero_white.jpg',
 
