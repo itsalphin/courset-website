@@ -10,6 +10,12 @@ import { useCart } from '@/lib/cart-context';
 import ProductCard from '@/components/ui/ProductCard';
 import Reveal from '@/components/ui/Reveal';
 
+// Products that have a dedicated customize page → route. Add new ones here.
+const CUSTOMIZE_ROUTES: Record<string, string> = {
+  'sparkle-studs-silver': '/customize/sparkle-studs-silver',
+  'sparkle-drops-silver': '/customize/sparkle-drops-silver',
+};
+
 interface ProductDetailViewProps {
   product: Product;
   relatedProducts: Product[];
@@ -215,10 +221,10 @@ export default function ProductDetailView({ product, relatedProducts }: ProductD
                 </span>
               </motion.button>
 
-              {/* Customize — ONLY for Sparkle Studs Silver */}
-              {product.id === 'sparkle-studs-silver' && (
+              {/* Customize — only for products with a dedicated customize page */}
+              {CUSTOMIZE_ROUTES[product.id] && (
                 <Link
-                  href="/customize/sparkle-studs-silver"
+                  href={CUSTOMIZE_ROUTES[product.id]}
                   className="mt-3 w-full inline-flex items-center justify-center gap-2.5 py-4 px-8 border border-[var(--color-accent)] text-[var(--color-accent)] font-[family-name:var(--font-body)] uppercase tracking-[0.15em] text-[0.75rem] cursor-pointer transition-colors hover:bg-[var(--color-accent)] hover:text-white"
                 >
                   <Sparkles size={16} strokeWidth={1.5} />
