@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ShoppingBag, MoveHorizontal, Check } from 'lucide-react';
+import { ShoppingBag, Check, Truck, Shield, RotateCcw } from 'lucide-react';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Reveal from '@/components/ui/Reveal';
 import { useCart } from '@/lib/cart-context';
@@ -13,12 +13,16 @@ import type { Product } from '@/lib/types';
 import ScrubVideo from './ScrubVideo';
 import { sparkleStudsSilver as cfg } from './data';
 
+// Editorial mosaic: lifestyle shots run taller (portrait), product/detail shots square.
+function aspectFor(src: string): string {
+  if (/on_model|velvet|marble/.test(src)) return 'aspect-[3/4]';
+  return 'aspect-square';
+}
+
 export default function CustomizeClient() {
   const { dispatch } = useCart();
   const baseProduct = getProductById(cfg.id);
 
-  // media[0] = interactive video, media[1..] = stills
-  const [activeMedia, setActiveMedia] = useState(0);
   const [versionId, setVersionId] = useState(cfg.defaultVersionId);
   const [added, setAdded] = useState(false);
 
@@ -60,69 +64,43 @@ export default function CustomizeClient() {
           )}
         </Reveal>
 
-        <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-14">
 
-          {/* ===== LEFT: interactive video + still gallery ===== */}
-          <div>
-            <div className="relative">
-              {activeMedia === 0 ? (
-                // aspect matches the video's real content region (536×720) so object-cover
-                // crops the baked-in black pillarbox bars exactly off both sides.
-                <ScrubVideo src={cfg.video} poster={cfg.poster} label={`${cfg.name} — drag to explore`} className="aspect-[536/720]" />
-              ) : (
-                <div className="relative aspect-[536/720] w-full overflow-hidden bg-[var(--color-bg-secondary)]">
+          {/* ===== LEFT: editorial mosaic gallery (all media visible at once) ===== */}
+          <div className="lg:col-span-2">
+            <div className="columns-1 sm:columns-2 gap-3 [column-fill:_balance]">
+              {/* Interactive scrub video — first tile, cropped to its real content aspect */}
+              <div className="mb-3 break-inside-avoid">
+                <ScrubVideo
+                  src={cfg.video}
+                  poster={cfg.poster}
+                  label={`${cfg.name} — drag to explore`}
+                  className="aspect-[536/720]"
+                />
+              </div>
+
+              {/* Still images */}
+              {cfg.images.map((img) => (
+                <div
+                  key={img.src}
+                  className={`relative mb-3 break-inside-avoid w-full overflow-hidden bg-[var(--color-bg-secondary)] ${aspectFor(img.src)}`}
+                >
                   <Image
-                    src={cfg.images[activeMedia - 1].src}
-                    alt={cfg.images[activeMedia - 1].alt}
+                    src={img.src}
+                    alt={img.alt}
                     fill
-                    quality={85}
-                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    quality={82}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover"
                     loading="lazy"
                   />
                 </div>
-              )}
-            </div>
-
-            {/* Thumbnail strip: video first, then stills */}
-            <div className="mt-4 flex gap-2.5 overflow-x-auto pb-2">
-              {/* Video thumbnail */}
-              <button
-                onClick={() => setActiveMedia(0)}
-                aria-label="Interactive video"
-                className={`relative h-[72px] w-[72px] shrink-0 cursor-pointer overflow-hidden transition-all duration-200 ${
-                  activeMedia === 0
-                    ? 'ring-2 ring-[var(--color-accent)] scale-105'
-                    : 'ring-1 ring-[var(--color-border)] hover:ring-[var(--color-text-tertiary)]'
-                }`}
-              >
-                {cfg.poster && (
-                  <Image src={cfg.poster} alt="" fill quality={40} sizes="72px" className="object-cover" />
-                )}
-                <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                  <MoveHorizontal size={18} strokeWidth={1.5} className="text-white" />
-                </span>
-              </button>
-
-              {cfg.images.map((img, i) => (
-                <button
-                  key={img.src}
-                  onClick={() => setActiveMedia(i + 1)}
-                  aria-label={img.label || `View image ${i + 1}`}
-                  className={`relative h-[72px] w-[72px] shrink-0 cursor-pointer overflow-hidden transition-all duration-200 ${
-                    activeMedia === i + 1
-                      ? 'ring-2 ring-[var(--color-accent)] scale-105'
-                      : 'ring-1 ring-[var(--color-border)] hover:ring-[var(--color-text-tertiary)]'
-                  }`}
-                >
-                  <Image src={img.src} alt="" fill quality={40} sizes="72px" className="object-cover" loading="lazy" />
-                </button>
               ))}
             </div>
           </div>
 
-          {/* ===== RIGHT: details + carat selector + summary ===== */}
-          <div className="lg:sticky lg:top-28 lg:self-start">
+          {/* ===== RIGHT: sticky details + carat selector + summary ===== */}
+          <div className="lg:col-span-1 lg:sticky lg:top-28 lg:self-start">
             {cfg.tagline && (
               <p className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-text-secondary)]">
                 {cfg.tagline}
@@ -204,12 +182,30 @@ export default function CustomizeClient() {
                 )}
               </motion.button>
 
-              <p className="mt-4 text-center font-[family-name:var(--font-body)] text-[var(--text-caption)] leading-relaxed text-[var(--color-text-tertiary)]">
-                Includes certificate of authenticity &middot; Free insured shipping &middot; Lifetime warranty
-              </p>
-              <p className="mt-2 text-center font-[family-name:var(--font-body)] text-[var(--text-caption)] text-[var(--color-text-tertiary)]">
+              <p className="mt-4 text-center font-[family-name:var(--font-body)] text-[var(--text-caption)] text-[var(--color-text-tertiary)]">
                 Handcrafted to order &middot; 4&ndash;6 weeks
               </p>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-7 border-t border-[var(--color-divider)] pt-6">
+              <h3 className="mb-4 font-[family-name:var(--font-body)] text-[var(--text-label)] uppercase tracking-[0.2em] text-[var(--color-text-tertiary)]">
+                We&rsquo;ve Got You Covered
+              </h3>
+              <ul className="space-y-3.5">
+                {[
+                  { icon: Truck, label: 'Free Insured Shipping & Returns' },
+                  { icon: Shield, label: 'Free Lifetime Warranty' },
+                  { icon: RotateCcw, label: 'Complimentary Lifetime Resizing' },
+                ].map(({ icon: Icon, label }) => (
+                  <li key={label} className="flex items-center gap-3">
+                    <Icon size={18} strokeWidth={1.5} className="shrink-0 text-[var(--color-accent)]" />
+                    <span className="font-[family-name:var(--font-body)] text-[var(--text-caption)] text-[var(--color-text-secondary)]">
+                      {label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <p className="mt-6 text-center">
