@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingBag, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useCart } from '@/lib/cart-context';
 import ProductCard from '@/components/ui/ProductCard';
@@ -214,6 +214,18 @@ export default function ProductDetailView({ product, relatedProducts }: ProductD
                   Add to Bag
                 </span>
               </motion.button>
+
+              {/* Customize — ONLY for Sparkle Studs Silver */}
+              {product.id === 'sparkle-studs-silver' && (
+                <Link
+                  href="/customize/sparkle-studs-silver"
+                  className="mt-3 w-full inline-flex items-center justify-center gap-2.5 py-4 px-8 border border-[var(--color-accent)] text-[var(--color-accent)] font-[family-name:var(--font-body)] uppercase tracking-[0.15em] text-[0.75rem] cursor-pointer transition-colors hover:bg-[var(--color-accent)] hover:text-white"
+                >
+                  <Sparkles size={16} strokeWidth={1.5} />
+                  Customize
+                </Link>
+              )}
+
               <p className="text-center font-[family-name:var(--font-body)] text-[var(--text-caption)] text-[var(--color-text-tertiary)] mt-3">
                 Handcrafted to order &middot; 4&ndash;6 weeks &middot; Free insured shipping
               </p>
