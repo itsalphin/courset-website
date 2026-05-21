@@ -1,9 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Box, Smartphone, ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import { Box, Smartphone, ShoppingBag, Sparkles } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useCart } from '@/lib/cart-context';
+import { CUSTOMIZE_ROUTES } from '@/lib/customize';
 import AnimatedImage from './AnimatedImage';
 import PriceDisplay from './PriceDisplay';
 
@@ -16,6 +18,7 @@ interface ProductCardProps {
 export default function ProductCard({ product, size = 'default', onView3D }: ProductCardProps) {
   const { dispatch } = useCart();
   const hasDetailPage = product.gallery && product.gallery.length > 0;
+  const customizeHref = CUSTOMIZE_ROUTES[product.id];
 
   const handleCardClick = () => {
     if (hasDetailPage) {
@@ -99,17 +102,31 @@ export default function ProductCard({ product, size = 'default', onView3D }: Pro
         </p>
       )}
 
-      {/* Add to bag */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          dispatch({ type: 'ADD_ITEM', payload: { product, quantity: 1 } });
-        }}
-        className="mt-3 flex items-center gap-2 font-[family-name:var(--font-body)] text-[0.65rem] uppercase tracking-[0.15em] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors cursor-pointer"
-      >
-        <ShoppingBag size={13} strokeWidth={1.5} />
-        Add to Bag
-      </button>
+      {/* Actions */}
+      <div className="mt-3 flex items-center gap-4">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch({ type: 'ADD_ITEM', payload: { product, quantity: 1 } });
+          }}
+          className="flex items-center gap-2 font-[family-name:var(--font-body)] text-[0.65rem] uppercase tracking-[0.15em] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors cursor-pointer"
+        >
+          <ShoppingBag size={13} strokeWidth={1.5} />
+          Add to Bag
+        </button>
+
+        {/* Customize — only for products with a dedicated customize page */}
+        {customizeHref && (
+          <Link
+            href={customizeHref}
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 font-[family-name:var(--font-body)] text-[0.65rem] uppercase tracking-[0.15em] text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors cursor-pointer"
+          >
+            <Sparkles size={13} strokeWidth={1.5} />
+            Customize
+          </Link>
+        )}
+      </div>
     </motion.article>
   );
 }

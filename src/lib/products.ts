@@ -1,4 +1,5 @@
 import type { Product } from './types';
+import { CUSTOMIZE_ROUTES } from './customize';
 
 export const products: Product[] = [
   // === VICTORY COLLECTION ($500–$2,000) ===
@@ -528,7 +529,10 @@ export const products: Product[] = [
 ];
 
 export function getProductsByCollection(collection: Product['collection']): Product[] {
-  return products.filter((p) => p.collection === collection);
+  // Feature customizable pieces first; preserve relative order otherwise (stable sort).
+  return products
+    .filter((p) => p.collection === collection)
+    .sort((a, b) => (CUSTOMIZE_ROUTES[b.id] ? 1 : 0) - (CUSTOMIZE_ROUTES[a.id] ? 1 : 0));
 }
 
 export function getProductById(id: string): Product | undefined {

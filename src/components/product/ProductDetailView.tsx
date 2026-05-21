@@ -7,15 +7,9 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ShoppingBag, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useCart } from '@/lib/cart-context';
+import { CUSTOMIZE_ROUTES } from '@/lib/customize';
 import ProductCard from '@/components/ui/ProductCard';
 import Reveal from '@/components/ui/Reveal';
-
-// Products that have a dedicated customize page → route. Add new ones here.
-const CUSTOMIZE_ROUTES: Record<string, string> = {
-  'sparkle-studs-silver': '/customize/sparkle-studs-silver',
-  'sparkle-drops-silver': '/customize/sparkle-drops-silver',
-  'paddle-pave-silver': '/customize/paddle-pave-silver',
-};
 
 interface ProductDetailViewProps {
   product: Product;
