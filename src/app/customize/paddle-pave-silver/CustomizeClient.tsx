@@ -11,17 +11,11 @@ import { useCart } from '@/lib/cart-context';
 import { getProductById } from '@/lib/products';
 import type { Product } from '@/lib/types';
 import ScrubVideo from './ScrubVideo';
-import { paddlePaveSilver as cfg, type MosaicImage } from './data';
+import { paddlePaveSilver as cfg } from './data';
 
-const wrapClasses =
-  'relative w-full overflow-hidden bg-[var(--color-bg-secondary)] ring-1 ring-[var(--color-border)]';
-
-function Tile({ img, sizes, aspect, className = '' }: { img: MosaicImage; sizes: string; aspect: string; className?: string }) {
-  return (
-    <div className={`${wrapClasses} ${aspect} ${className}`} style={{ boxShadow: 'var(--shadow-sm)' }}>
-      <Image src={img.src} alt={img.alt} fill quality={82} sizes={sizes} className="object-cover" loading="lazy" />
-    </div>
-  );
+// Lifestyle / angled shots run taller (portrait); product & detail shots square.
+function aspectFor(src: string): string {
+  return /on_model|velvet|marble/.test(src) ? 'aspect-[3/4]' : 'aspect-square';
 }
 
 export default function CustomizeClient() {
@@ -29,10 +23,6 @@ export default function CustomizeClient() {
   const baseProduct = getProductById(cfg.id);
 
   const [added, setAdded] = useState(false);
-
-  // images: [0]=tall, [1]=square -> side stack beside the feature video; [2..]=bottom band
-  const sideImages = cfg.images.slice(0, 2);
-  const bandImages = cfg.images.slice(2);
 
   const handleAddToBag = () => {
     if (!baseProduct) return;
@@ -72,12 +62,14 @@ export default function CustomizeClient() {
 
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-14">
 
-          {/* ===== LEFT: editorial MOSAIC (asymmetric, varied tiles) ===== */}
-          <div className="lg:col-span-2 space-y-3">
-            {/* Feature row: large scrub video + tall/square side stack */}
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-[3fr_2fr]">
+          {/* ===== LEFT: editorial masonry (video feature + flowing stills) ===== */}
+          <div className="lg:col-span-2">
+            <div className="columns-1 sm:columns-2 gap-3 [column-fill:_balance]">
               {/* Feature tile — interactive scrub video, cropped to its real content aspect */}
-              <div className="ring-1 ring-[var(--color-border)]" style={{ boxShadow: 'var(--shadow-sm)' }}>
+              <div
+                className="mb-3 break-inside-avoid ring-1 ring-[var(--color-border)]"
+                style={{ boxShadow: 'var(--shadow-sm)' }}
+              >
                 <ScrubVideo
                   src={cfg.video}
                   poster={cfg.poster}
@@ -85,23 +77,24 @@ export default function CustomizeClient() {
                   className="aspect-[536/720]"
                 />
               </div>
-              {/* Side stack */}
-              <div className="grid grid-cols-1 gap-3 content-start">
-                <Tile img={sideImages[0]} aspect="aspect-[3/4]" sizes="(max-width: 1024px) 100vw, 27vw" />
-                <Tile img={sideImages[1]} aspect="aspect-square" sizes="(max-width: 1024px) 100vw, 27vw" />
-              </div>
-            </div>
 
-            {/* Bottom band: varied tiles (wide spans two columns) */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 [grid-auto-flow:dense]">
-              {bandImages.map((img) => (
-                <Tile
+              {/* Still images */}
+              {cfg.images.map((img) => (
+                <div
                   key={img.src}
-                  img={img}
-                  aspect={img.span === 'wide' ? 'aspect-[16/9]' : 'aspect-square'}
-                  className={img.span === 'wide' ? 'sm:col-span-2' : ''}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
+                  className={`relative mb-3 break-inside-avoid w-full overflow-hidden bg-[var(--color-bg-secondary)] ring-1 ring-[var(--color-border)] ${aspectFor(img.src)}`}
+                  style={{ boxShadow: 'var(--shadow-sm)' }}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    quality={82}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                    loading="lazy"
+                  />
+                </div>
               ))}
             </div>
           </div>
