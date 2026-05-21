@@ -6,9 +6,11 @@ export interface ProductImage {
 
 export interface ProductSpecs {
   metalType?: string;
+  diamond?: string;
   weight?: string;
   dimensions?: string;
   chain?: string;
+  closure?: string;
 }
 
 export interface Product {

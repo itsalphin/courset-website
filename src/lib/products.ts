@@ -154,7 +154,13 @@ export const products: Product[] = [
       { src: '/images/sparkle-studs-silver-sport_context.jpg', alt: 'Sparkle Studs Silver — on court', label: 'On Court' },
       { src: '/images/sparkle-studs-silver-detail_macro.jpg', alt: 'Sparkle Studs Silver — detail', label: 'Detail' },
     ],
-    specs: { metalType: '14K White Gold', weight: '4.2g (pair)', dimensions: '10mm half-sphere', chain: 'Push-back butterfly closure' },
+    specs: {
+      metalType: '14K White Gold (Rhodium-Plated)',
+      diamond: '0.50–0.98 ct twt · bezel-set brilliants', // 3 carat versions on the Customize page
+      weight: '4.2g (pair)', // TODO: confirm pair weight
+      dimensions: '8mm diamond-set sphere', // TODO: confirm sphere diameter
+      closure: 'Secure friction post with push-back',
+    },
   },
   {
     id: 'sparkle-drops-gold',
