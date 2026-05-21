@@ -14,6 +14,7 @@ import Reveal from '@/components/ui/Reveal';
 const CUSTOMIZE_ROUTES: Record<string, string> = {
   'sparkle-studs-silver': '/customize/sparkle-studs-silver',
   'sparkle-drops-silver': '/customize/sparkle-drops-silver',
+  'paddle-pave-silver': '/customize/paddle-pave-silver',
 };
 
 interface ProductDetailViewProps {
