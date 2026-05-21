@@ -65,7 +65,8 @@ export default function ScrubVideo({ src, poster, label = 'Drag to explore the p
     if (!wrapper || !video || !Number.isFinite(video.duration)) return;
     const rect = wrapper.getBoundingClientRect();
     const deltaRatio = (clientX - dragStartX.current) / rect.width; // full width sweep = full clip
-    scheduleSeek(dragStartTime.current + deltaRatio * video.duration);
+    // Invert so the piece follows the drag direction (drag right → rotation tracks your hand).
+    scheduleSeek(dragStartTime.current - deltaRatio * video.duration);
   }, [scheduleSeek]);
 
   // Prime the video so frames are seekable (iOS Safari needs a muted play/pause).
