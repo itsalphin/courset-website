@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import ConciergeButton from '@/components/ui/ConciergeButton';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Reveal from '@/components/ui/Reveal';
-import { byForm, type Form, type Piece } from '@/lib/catalog.config';
+import { byForm, type Form, type Piece } from '@/lib/catalog';
 import { CUSTOMIZE_ROUTES } from '@/lib/customize';
 import { getProductById } from '@/lib/products';
 import { formatPrice } from '@/lib/pricing';

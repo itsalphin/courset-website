@@ -12,7 +12,7 @@ import {
   estimatePrice,
   imagePath,
   CONCIERGE_PRICE_THRESHOLD,
-} from '@/lib/catalog.config';
+} from '@/lib/catalog';
 import { getVisualAxes, getInformationalAxes } from '@/lib/catalog-axes';
 import OptionSelector from './OptionSelector';
 import PreviewImage from './PreviewImage';

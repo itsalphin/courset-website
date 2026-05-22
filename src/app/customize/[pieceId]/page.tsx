@@ -3,7 +3,7 @@ import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import ConciergeButton from '@/components/ui/ConciergeButton';
 import Configurator from '@/components/configurator/Configurator';
-import { CATALOG, byId } from '@/lib/catalog.config';
+import { CATALOG, byId } from '@/lib/catalog';
 
 interface ConfigurePageProps {
   params: Promise<{ pieceId: string }>;

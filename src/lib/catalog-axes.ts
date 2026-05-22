@@ -13,7 +13,7 @@ import {
   EARRING_BACKS,
   CUT_GRADES,
   CLARITIES,
-} from './catalog.config';
+} from './catalog';
 
 export interface AxisOption {
   id: string | number;
