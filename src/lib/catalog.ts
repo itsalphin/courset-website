@@ -116,13 +116,15 @@ export interface Piece {
 
 export const CATALOG: Piece[] = [
   // ========================= BALL FAMILY =========================
+  // One piece per wear type. Finish = "Polished" hides the diamond-only axes
+  // (caratVersion / cut / clarity); Finish = "Gypsy-Set" reveals them.
   {
-    id: 'ball-pendant-diamond',
-    name: 'Pickleball Diamond Pendant',
-    codes: ['PGYPSY', 'GUP0002', 'GUP0003-50-1.00', 'GUP0003-VZ-1.00'],
+    id: 'ball-pendant',
+    name: 'Pickleball Pendant',
+    codes: ['PGYPSY', 'PPICKLEB', 'GUP0002', 'GUP0003-50-1.00', 'GUP0003-VZ-1.00'],
     form: 'ball', wearType: 'pendant',
-    siteProductId: 'diamond-ball-pendant', // ⚠️ confirm
-    basePrice: 720, // TODO
+    siteProductId: 'diamond-ball-pendant',
+    basePrice: 480, // TODO — polished floor; diamond config adds carat × RATE
     axes: {
       treatment: ['plain', 'gypsy'],
       caratVersion: [0.2, 0.25, 0.5, 0.75, 1.0],
@@ -134,35 +136,18 @@ export const CATALOG: Piece[] = [
     },
     defaults: { treatment: 'gypsy', caratVersion: 0.5, metalColor: 'white', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
     video: null, // TODO
-    imageBase: '/images/catalog/ball-pendant-diamond', // TODO
-    notes: 'Diamonds grow visibly with carat → caratVersion IS a visual axis here.',
+    imageBase: '/images/catalog/ball-pendant', // TODO
+    notes: 'Diamond axes (carat/cut/clarity) hide when Finish = Polished.',
   },
   {
-    id: 'ball-pendant-plain',
-    name: 'Pickleball Pendant — Polished',
-    codes: ['PPICKLEB'],
-    form: 'ball', wearType: 'pendant',
-    siteProductId: 'court-royale-pendant', // ⚠️ confirm
-    basePrice: 480, // TODO
-    axes: {
-      treatment: ['plain'],
-      metalColor: ['yellow', 'white'],
-      karat: ['14k', '18k'],
-      chainLength: [16, 18, 20],
-    },
-    defaults: { treatment: 'plain', metalColor: 'white', karat: '14k', chainLength: 18 },
-    video: null, imageBase: '/images/catalog/ball-pendant-plain',
-    notes: 'Open-hole pickleball, no stones. No carat/clarity axes.',
-  },
-  {
-    id: 'ball-earring-diamond',
-    name: 'Pickleball Diamond Earrings',
-    codes: ['EGYPSY', 'GUE0001', 'GUE0002', 'GUE0003-50-1.00', 'GUE0004-50-1.00', 'GUE0003-VZ-1.00', 'GUE0004-VZ-1.00'],
+    id: 'ball-earring',
+    name: 'Pickleball Earrings',
+    codes: ['EGYPSY', 'EPICKLEB', 'GUE0001', 'GUE0002', 'GUE0003-50-1.00', 'GUE0004-50-1.00', 'GUE0003-VZ-1.00', 'GUE0004-VZ-1.00'],
     form: 'ball', wearType: 'earring',
-    siteProductId: 'sparkle-drops-silver', // ⚠️ confirm — page already built
-    basePrice: 920, // TODO
+    siteProductId: 'sparkle-drops-silver',
+    basePrice: 520, // TODO — polished floor; diamond config adds carat × RATE
     axes: {
-      treatment: ['gypsy'],
+      treatment: ['plain', 'gypsy'],
       caratVersion: [0.5, 0.75, 0.98],
       metalColor: ['yellow', 'white'],
       karat: ['14k', '18k'],
@@ -171,24 +156,8 @@ export const CATALOG: Piece[] = [
       clarity: ['vs', 'vvs', 'if'],
     },
     defaults: { treatment: 'gypsy', caratVersion: 0.5, metalColor: 'white', karat: '14k', earringBack: 'lever', cutGrade: 'ex', clarity: 'vs' },
-    video: null, imageBase: '/images/catalog/ball-earring-diamond',
-    notes: "Lever-back = 'Sparkle Drops Silver'. Post version is the stud variant.",
-  },
-  {
-    id: 'ball-earring-plain',
-    name: 'Pickleball Earrings — Polished',
-    codes: ['EPICKLEB'],
-    form: 'ball', wearType: 'earring',
-    siteProductId: null,
-    basePrice: 520, // TODO
-    axes: {
-      treatment: ['plain'],
-      metalColor: ['yellow', 'white'],
-      karat: ['14k', '18k'],
-      earringBack: ['lever', 'post'],
-    },
-    defaults: { treatment: 'plain', metalColor: 'white', karat: '14k', earringBack: 'lever' },
-    video: null, imageBase: '/images/catalog/ball-earring-plain',
+    video: null, imageBase: '/images/catalog/ball-earring',
+    notes: "Lever-back gypsy = 'Sparkle Drops Silver'. Diamond axes hide when Finish = Polished.",
   },
 
   // ========================= PADDLE FAMILY =========================
@@ -339,16 +308,21 @@ export function estimatePrice(piece: Piece, sel: Record<string, string | number>
   const accent = ACCENTS.find((a) => a.id === sel.accent);
   if (accent) p += accent.priceAdd;
 
-  if (typeof sel.caratVersion === 'number') {
+  // Diamond-only math only applies when the piece is actually stoned.
+  const hasStones = sel.treatment !== 'plain';
+
+  if (hasStones && typeof sel.caratVersion === 'number') {
     const RATE = 1600; // TODO per-family rate
     p += sel.caratVersion * RATE;
   }
 
-  const cut = CUT_GRADES.find((c) => c.id === sel.cutGrade);
-  if (cut) p *= cut.multiplier;
+  if (hasStones) {
+    const cut = CUT_GRADES.find((c) => c.id === sel.cutGrade);
+    if (cut) p *= cut.multiplier;
 
-  const clarity = CLARITIES.find((c) => c.id === sel.clarity);
-  if (clarity) p *= clarity.multiplier;
+    const clarity = CLARITIES.find((c) => c.id === sel.clarity);
+    if (clarity) p *= clarity.multiplier;
+  }
 
   const chain = CHAIN_LENGTHS.find((c) => c.id === sel.chainLength);
   if (chain) p += chain.priceAdd;

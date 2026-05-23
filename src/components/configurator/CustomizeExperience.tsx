@@ -38,8 +38,8 @@ export default function CustomizeExperience() {
   const piecesInForm = useMemo(() => byForm(form), [form]);
   const piece: Piece = piecesInForm.find((p) => p.id === pieceId) ?? piecesInForm[0];
 
-  const visualAxes = useMemo(() => getVisualAxes(piece), [piece]);
-  const infoAxes = useMemo(() => getInformationalAxes(piece), [piece]);
+  const visualAxes = useMemo(() => getVisualAxes(piece, sel), [piece, sel]);
+  const infoAxes = useMemo(() => getInformationalAxes(piece, sel), [piece, sel]);
 
   // Synthetic axes so the silhouette + style pickers reuse OptionSelector styling.
   const formAxis: ResolvedAxis = { key: '__form', label: 'Silhouette', kind: 'visual', options: FORMS.map((f) => ({ id: f.id, label: f.label })) };

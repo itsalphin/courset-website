@@ -69,10 +69,25 @@ function resolve(piece: Piece, key: string): ResolvedAxis | null {
   return { key, label: meta.label, kind, options };
 }
 
-export function getVisualAxes(piece: Piece): ResolvedAxis[] {
-  return VISUAL_ORDER.map((k) => resolve(piece, k)).filter((a): a is ResolvedAxis => a !== null);
+/**
+ * Diamond-only axes that should hide when the piece is currently polished
+ * (treatment === 'plain').
+ */
+const DIAMOND_AXES = new Set(['caratVersion', 'cutGrade', 'clarity']);
+
+function axisApplies(key: string, sel?: Record<string, string | number>): boolean {
+  if (sel?.treatment === 'plain' && DIAMOND_AXES.has(key)) return false;
+  return true;
 }
 
-export function getInformationalAxes(piece: Piece): ResolvedAxis[] {
-  return INFO_ORDER.map((k) => resolve(piece, k)).filter((a): a is ResolvedAxis => a !== null);
+export function getVisualAxes(piece: Piece, sel?: Record<string, string | number>): ResolvedAxis[] {
+  return VISUAL_ORDER.map((k) => resolve(piece, k))
+    .filter((a): a is ResolvedAxis => a !== null)
+    .filter((a) => axisApplies(a.key, sel));
+}
+
+export function getInformationalAxes(piece: Piece, sel?: Record<string, string | number>): ResolvedAxis[] {
+  return INFO_ORDER.map((k) => resolve(piece, k))
+    .filter((a): a is ResolvedAxis => a !== null)
+    .filter((a) => axisApplies(a.key, sel));
 }

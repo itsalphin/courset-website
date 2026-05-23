@@ -28,8 +28,8 @@ export default function Configurator({ piece }: ConfiguratorProps) {
   const [sel, setSel] = useState<Record<string, string | number>>({ ...piece.defaults });
   const [added, setAdded] = useState(false);
 
-  const visualAxes = useMemo(() => getVisualAxes(piece), [piece]);
-  const infoAxes = useMemo(() => getInformationalAxes(piece), [piece]);
+  const visualAxes = useMemo(() => getVisualAxes(piece, sel), [piece, sel]);
+  const infoAxes = useMemo(() => getInformationalAxes(piece, sel), [piece, sel]);
 
   const price = estimatePrice(piece, sel);
   const overThreshold = price > CONCIERGE_PRICE_THRESHOLD;
