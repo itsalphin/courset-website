@@ -108,12 +108,6 @@ export default function CustomizeExperience() {
           </h1>
         </Reveal>
 
-        {/* Step 1 + 2: choose silhouette, then style */}
-        <div className="mt-10 space-y-7 border-b border-[var(--color-divider)] pb-10">
-          <OptionSelector axis={formAxis} value={form} onChange={(v) => chooseForm(v as Form)} />
-          <OptionSelector axis={pieceAxis} value={pieceId} onChange={(v) => choosePiece(String(v))} />
-        </div>
-
         {/* Configurator for the chosen piece */}
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-14">
           {/* LEFT — preview + live spec sheet (sticky) */}
@@ -129,10 +123,16 @@ export default function CustomizeExperience() {
             </div>
           </div>
 
-          {/* RIGHT — option axes + price */}
+          {/* RIGHT — silhouette/style pickers, then option axes + price */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Silhouette + Style — choose the piece before tailoring it */}
+            <section className="space-y-7 pb-2">
+              <OptionSelector axis={formAxis} value={form} onChange={(v) => chooseForm(v as Form)} />
+              <OptionSelector axis={pieceAxis} value={pieceId} onChange={(v) => choosePiece(String(v))} />
+            </section>
+
             {visualAxes.length > 0 && (
-              <section className="space-y-7">
+              <section className="space-y-7 border-t border-[var(--color-divider)] pt-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl text-[var(--color-text-primary)]">Design</h2>
                 {visualAxes.map((axis) => (
                   <OptionSelector key={axis.key} axis={axis} value={sel[axis.key]} onChange={(v) => setAxis(axis.key, v)} />
