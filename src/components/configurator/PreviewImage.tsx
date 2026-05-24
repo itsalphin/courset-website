@@ -10,14 +10,19 @@ interface PreviewImageProps {
   /** Guaranteed-to-exist fallback (mapped product photo). */
   fallbackSrc?: string;
   alt: string;
+  /**
+   * Parent-controlled "configuring" state. When true, a shimmer overlay covers
+   * the preview and the image dims — giving every axis click a tactile feel.
+   */
+  loading?: boolean;
 }
 
 /**
  * Renders the composed catalog image; if that asset isn't loaded yet it falls
- * back to the mapped product photo, and finally to a styled placeholder — so
- * the configurator never shows a broken image while assets are being sourced.
+ * back to the mapped product photo, and finally to a styled placeholder.
+ * The `loading` prop controls a brief shimmer overlay on selection changes.
  */
-export default function PreviewImage({ src, fallbackSrc, alt }: PreviewImageProps) {
+export default function PreviewImage({ src, fallbackSrc, alt, loading = false }: PreviewImageProps) {
   const [failed, setFailed] = useState<Record<string, boolean>>({});
 
   const candidates = [src, fallbackSrc].filter((c): c is string => Boolean(c));
@@ -27,6 +32,7 @@ export default function PreviewImage({ src, fallbackSrc, alt }: PreviewImageProp
     <div
       className="relative aspect-square w-full overflow-hidden bg-[var(--color-bg-secondary)] ring-1 ring-[var(--color-border)]"
       style={{ boxShadow: 'var(--shadow-sm)' }}
+      aria-busy={loading || undefined}
     >
       {shown ? (
         <Image
@@ -37,7 +43,7 @@ export default function PreviewImage({ src, fallbackSrc, alt }: PreviewImageProp
           quality={85}
           priority
           sizes="(max-width: 1024px) 100vw, 55vw"
-          className="object-cover"
+          className={`object-cover transition-opacity duration-300 ${loading ? 'opacity-60' : 'opacity-100'}`}
           onError={() => setFailed((f) => ({ ...f, [shown]: true }))}
         />
       ) : (
@@ -46,6 +52,14 @@ export default function PreviewImage({ src, fallbackSrc, alt }: PreviewImageProp
           <span className="font-[family-name:var(--font-body)] text-[var(--text-caption)]">Preview imagery coming soon</span>
         </div>
       )}
+
+      {/* Selection-change shimmer overlay (parent-controlled) */}
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-0 bg-gradient-to-br from-white/45 via-white/10 to-white/45 transition-opacity duration-300 ${
+          loading ? 'opacity-100 animate-pulse' : 'opacity-0'
+        }`}
+      />
     </div>
   );
 }

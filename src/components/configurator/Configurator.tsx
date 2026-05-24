@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Reveal from '@/components/ui/Reveal';
 import { useCart } from '@/lib/cart-context';
@@ -27,6 +27,15 @@ export default function Configurator({ piece }: ConfiguratorProps) {
   const { dispatch } = useCart();
   const [sel, setSel] = useState<Record<string, string | number>>({ ...piece.defaults });
   const [added, setAdded] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
+  const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Brief "configuring" pulse on any axis change. */
+  const triggerLoading = () => {
+    setImageLoading(true);
+    if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    loadingTimer.current = setTimeout(() => setImageLoading(false), 450);
+  };
 
   const visualAxes = useMemo(() => getVisualAxes(piece, sel), [piece, sel]);
   const infoAxes = useMemo(() => getInformationalAxes(piece, sel), [piece, sel]);
@@ -36,7 +45,10 @@ export default function Configurator({ piece }: ConfiguratorProps) {
   const previewSrc = imagePath(piece, sel);
   const fallbackSrc = (piece.siteProductId && getProductById(piece.siteProductId)?.image) || undefined;
 
-  const setAxis = (key: string, value: string | number) => setSel((s) => ({ ...s, [key]: value }));
+  const setAxis = (key: string, value: string | number) => {
+    setSel((s) => ({ ...s, [key]: value }));
+    triggerLoading();
+  };
 
   const specRows: SpecRow[] = [...visualAxes, ...infoAxes]
     .map((a) => ({ label: a.label, value: a.options.find((o) => o.id === sel[a.key])?.label ?? '' }))
@@ -89,7 +101,12 @@ export default function Configurator({ piece }: ConfiguratorProps) {
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-14">
           {/* LEFT — preview + live spec sheet (sticky) */}
           <div className="lg:col-span-3 lg:sticky lg:top-28 lg:self-start space-y-5">
-            <PreviewImage src={previewSrc} fallbackSrc={fallbackSrc} alt={piece.name} />
+            <PreviewImage
+              src={previewSrc}
+              fallbackSrc={fallbackSrc}
+              alt={piece.name}
+              loading={imageLoading}
+            />
             {!fallbackSrc && (
               <p className="font-[family-name:var(--font-body)] text-[0.7rem] text-[var(--color-text-tertiary)]">
                 Preview updates with your design selections once catalog imagery is loaded.

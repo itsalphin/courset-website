@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Reveal from '@/components/ui/Reveal';
 import { useCart } from '@/lib/cart-context';
@@ -34,6 +34,15 @@ export default function CustomizeExperience() {
   const [pieceId, setPieceId] = useState<string>(byForm('ball')[0].id);
   const [sel, setSel] = useState<Record<string, string | number>>({ ...byForm('ball')[0].defaults });
   const [added, setAdded] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
+  const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Brief "configuring" pulse on any axis change so every click feels tactile. */
+  const triggerLoading = () => {
+    setImageLoading(true);
+    if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    loadingTimer.current = setTimeout(() => setImageLoading(false), 450);
+  };
 
   const piecesInForm = useMemo(() => byForm(form), [form]);
   const piece: Piece = piecesInForm.find((p) => p.id === pieceId) ?? piecesInForm[0];
@@ -50,13 +59,18 @@ export default function CustomizeExperience() {
     setForm(f);
     setPieceId(first.id);
     setSel({ ...first.defaults });
+    triggerLoading();
   };
   const choosePiece = (id: string) => {
     const p = piecesInForm.find((x) => x.id === id) ?? piecesInForm[0];
     setPieceId(p.id);
     setSel({ ...p.defaults });
+    triggerLoading();
   };
-  const setAxis = (key: string, value: string | number) => setSel((s) => ({ ...s, [key]: value }));
+  const setAxis = (key: string, value: string | number) => {
+    setSel((s) => ({ ...s, [key]: value }));
+    triggerLoading();
+  };
 
   const price = estimatePrice(piece, sel);
   const overThreshold = price > CONCIERGE_PRICE_THRESHOLD;
@@ -112,7 +126,12 @@ export default function CustomizeExperience() {
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-14">
           {/* LEFT — preview + live spec sheet (sticky) */}
           <div className="lg:col-span-3 lg:sticky lg:top-28 lg:self-start space-y-5">
-            <PreviewImage src={previewSrc} fallbackSrc={fallbackSrc} alt={piece.name} />
+            <PreviewImage
+              src={previewSrc}
+              fallbackSrc={fallbackSrc}
+              alt={piece.name}
+              loading={imageLoading}
+            />
             {!fallbackSrc && (
               <p className="font-[family-name:var(--font-body)] text-[0.7rem] text-[var(--color-text-tertiary)]">
                 Preview updates with your design selections once catalog imagery is loaded.
