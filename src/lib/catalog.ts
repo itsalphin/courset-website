@@ -282,12 +282,16 @@ export const CATALOG: Piece[] = [
  * Informational axes (karat, cut, clarity, chainLength) are intentionally absent.
  */
 export function imagePath(piece: Piece, sel: Record<string, string | number>): string {
+  // Diamond-only parts must not leak into the path when the piece is polished,
+  // otherwise a stale caratVersion in state points the resolver at a file that
+  // doesn't exist (e.g. yellow-plain-0.5-lever.jpg instead of yellow-plain-lever.jpg).
+  const hasStones = sel.treatment !== 'plain';
   const parts = [
     sel.metalColor,
     sel.treatment,
     sel.accent && sel.accent !== 'diamond' ? sel.accent : null, // diamond is the default, omit
     sel.enamelColor,
-    sel.caratVersion,
+    hasStones ? sel.caratVersion : null,
     sel.earringBack, // ball earrings differ lever vs post visually
   ].filter((p) => p !== undefined && p !== null && p !== '');
   return `${piece.imageBase}/${parts.join('-')}.jpg`.toLowerCase();
