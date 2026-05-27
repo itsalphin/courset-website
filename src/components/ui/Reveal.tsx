@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { EASE, DURATION } from '@/lib/animations';
+import { EASE } from '@/lib/animations';
 
 interface RevealProps {
   children: React.ReactNode;

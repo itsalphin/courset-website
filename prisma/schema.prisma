@@ -100,6 +100,9 @@ model Order {
 
   @@index([userId])
   @@index([stripePaymentId])
+  // Admin orders list filters on `status` and orders by `createdAt` — a
+  // composite index makes that scan O(matching) instead of O(all).
+  @@index([status, createdAt])
 }
 
 model OrderItem {

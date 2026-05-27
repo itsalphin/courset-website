@@ -10,7 +10,7 @@ import Reveal from '@/components/ui/Reveal';
 import { useCart } from '@/lib/cart-context';
 import { getProductById } from '@/lib/products';
 import type { Product } from '@/lib/types';
-import ScrubVideo from './ScrubVideo';
+import ScrubVideo from '@/components/customize/ScrubVideo';
 import { paddlePaveSilver as cfg } from './data';
 
 // Lifestyle / angled shots run taller (portrait); product & detail shots square.

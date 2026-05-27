@@ -3,7 +3,6 @@
 import AnimatedImage from '@/components/ui/AnimatedImage';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
-import ConciergeButton from '@/components/ui/ConciergeButton';
 import WhiteGlove from '@/components/sections/WhiteGlove';
 import Reveal from '@/components/ui/Reveal';
 import Button from '@/components/ui/Button';

@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, ShoppingBag } from 'lucide-react';
 import { useLenis } from 'lenis/react';
 import { EASE } from '@/lib/animations';
 import { useAuth } from '@/lib/auth-context';
 import { useCart } from '@/lib/cart-context';
+
+const MotionLink = motion.create(Link);
 
 const navLinks = [
   { label: 'Collections', href: '/collections' },
@@ -61,39 +64,39 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
       >
         <nav className="mx-auto flex items-center justify-between px-[var(--gutter)] py-5" style={{ maxWidth: 'var(--max-width)' }}>
           {/* Logo */}
-          <a
+          <Link
             href="/"
             className={`font-[family-name:var(--font-display)] text-2xl font-light tracking-[0.08em] transition-colors duration-300 ${useDark ? 'text-[var(--color-text-primary)]' : 'text-white'}`}
           >
             COURSET
-          </a>
+          </Link>
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 className={`font-[family-name:var(--font-body)] text-[0.85rem] font-light tracking-[0.22em] uppercase hover:text-[var(--color-accent)] transition-colors cursor-pointer ${useDark ? 'text-[var(--color-text-primary)]' : 'text-white/90'}`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
           {/* Right icons: Account + Cart + Mobile menu */}
           <div className="flex items-center gap-5">
             {/* Account */}
-            <a
+            <Link
               href={user ? '/profile' : '/login'}
               className={`p-1 transition-colors cursor-pointer ${useDark ? 'text-[var(--color-text-primary)] hover:text-[var(--color-accent)]' : 'text-white/90 hover:text-white'}`}
               aria-label={user ? 'My account' : 'Sign in'}
             >
               <User size={20} strokeWidth={1.5} />
-            </a>
+            </Link>
 
             {/* Cart */}
-            <a
+            <Link
               href="/cart"
               className={`relative p-1 transition-colors cursor-pointer ${useDark ? 'text-[var(--color-text-primary)] hover:text-[var(--color-accent)]' : 'text-white/90 hover:text-white'}`}
               aria-label={`Shopping bag${totalItems > 0 ? ` (${totalItems} items)` : ''}`}
@@ -104,7 +107,7 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
                   {totalItems}
                 </span>
               )}
-            </a>
+            </Link>
 
             {/* Mobile hamburger */}
             <button
@@ -129,12 +132,13 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
             transition={{ duration: 0.3, ease: EASE }}
           >
             <div className="flex items-center justify-between px-[var(--gutter)] py-5">
-              <a
+              <Link
                 href="/"
+                onClick={() => setMobileOpen(false)}
                 className="font-[family-name:var(--font-display)] text-2xl font-light tracking-[0.08em] text-[var(--color-text-primary)]"
               >
                 COURSET
-              </a>
+              </Link>
               <button
                 className="p-2 cursor-pointer text-[var(--color-text-primary)]"
                 onClick={() => setMobileOpen(false)}
@@ -146,7 +150,7 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
 
             <div className="flex-1 flex flex-col items-center justify-center gap-8">
               {navLinks.map((link, i) => (
-                <motion.a
+                <MotionLink
                   key={link.label}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
@@ -156,12 +160,12 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
                   transition={{ delay: 0.1 + i * 0.08, duration: 0.4, ease: EASE }}
                 >
                   {link.label}
-                </motion.a>
+                </MotionLink>
               ))}
 
               {/* Mobile auth + cart links */}
               <div className="border-t border-[var(--color-divider)] pt-6 mt-4 flex items-center gap-8">
-                <motion.a
+                <MotionLink
                   href={user ? '/profile' : '/login'}
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-2 font-[family-name:var(--font-body)] text-sm text-[var(--color-text-secondary)] cursor-pointer"
@@ -171,8 +175,8 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
                 >
                   <User size={18} strokeWidth={1.5} />
                   {user ? 'My Account' : 'Sign In'}
-                </motion.a>
-                <motion.a
+                </MotionLink>
+                <MotionLink
                   href="/cart"
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-2 font-[family-name:var(--font-body)] text-sm text-[var(--color-text-secondary)] cursor-pointer"
@@ -182,7 +186,7 @@ export default function Navigation({ variant = 'dark' }: NavigationProps) {
                 >
                   <ShoppingBag size={18} strokeWidth={1.5} />
                   Bag {totalItems > 0 && `(${totalItems})`}
-                </motion.a>
+                </MotionLink>
               </div>
             </div>
           </motion.div>

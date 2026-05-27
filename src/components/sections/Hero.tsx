@@ -2,9 +2,10 @@
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 import { useReducedMotion } from 'framer-motion';
-import { gsap, SplitText, ScrollTrigger, useGSAP } from '@/lib/gsap';
+import { gsap, SplitText } from '@/lib/gsap';
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -121,7 +122,6 @@ export default function Hero() {
     }, containerRef);
 
     return () => ctx.revert();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, prefersReduced]);
 
   // If reduced motion, show everything immediately
@@ -180,18 +180,18 @@ export default function Hero() {
           </p>
 
           <div ref={ctaRef} className="mt-10 flex flex-col sm:flex-row items-start gap-4" style={reducedStyle}>
-            <a
+            <Link
               href="/collections"
               className="inline-flex items-center justify-center px-8 py-3.5 bg-white text-[var(--color-text-primary)] font-[family-name:var(--font-body)] text-[0.75rem] font-medium uppercase tracking-[0.2em] hover:bg-white/90 transition-colors cursor-pointer"
             >
               Explore Collections
-            </a>
-            <a
+            </Link>
+            <Link
               href="/customize"
               className="inline-flex items-center justify-center px-8 py-3.5 border border-white/40 text-white font-[family-name:var(--font-body)] text-[0.75rem] font-light uppercase tracking-[0.2em] hover:border-white/70 hover:bg-white/10 transition-colors cursor-pointer"
             >
               Customize Your Piece
-            </a>
+            </Link>
           </div>
 
           <p

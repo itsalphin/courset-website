@@ -7,24 +7,29 @@ import { useReducedMotion } from 'framer-motion';
 interface ScrubVideoProps {
   src: string;
   poster?: string;
-  /** Accessible description of the media. */
+  /** Accessible label for the slider control. */
   label?: string;
   className?: string;
 }
 
 /**
- * Timeline-scrub video (the "Apple product page" technique).
- * The video never plays normally — horizontal drag (mouse + touch) maps to
- * video.currentTime so the user sweeps through frames by hand. Hover on
- * desktop is an optional position-based scrub nicety.
+ * Timeline-scrub video — the "Apple product page" technique. The clip never
+ * plays normally; horizontal pointer drag (or arrow keys) maps to
+ * `video.currentTime` so the user sweeps through frames by hand.
+ *
+ * A11y: exposed as role="slider" with min=0, max=duration, valuenow=current
+ * time, and Left/Right arrow steps of duration/24. Tab brings focus,
+ * arrow keys move position, Home/End jump to ends.
  */
-export default function ScrubVideo({ src, poster, label = 'Drag to explore the piece', className = '' }: ScrubVideoProps) {
+export default function ScrubVideo({ src, poster, label = 'Drag or arrow-key to explore the piece', className = '' }: ScrubVideoProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [interacted, setInteracted] = useState(false);
+  const [valueNow, setValueNow] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
@@ -38,12 +43,16 @@ export default function ScrubVideo({ src, poster, label = 'Drag to explore the p
   const scheduleSeek = useCallback((time: number) => {
     const video = videoRef.current;
     if (!video || !Number.isFinite(video.duration)) return;
-    pendingTime.current = Math.max(0, Math.min(video.duration, time));
+    const clamped = Math.max(0, Math.min(video.duration, time));
+    pendingTime.current = clamped;
     if (rafId.current == null) {
       rafId.current = requestAnimationFrame(() => {
         rafId.current = null;
         const v = videoRef.current;
-        if (v && pendingTime.current != null) v.currentTime = pendingTime.current;
+        if (v && pendingTime.current != null) {
+          v.currentTime = pendingTime.current;
+          setValueNow(pendingTime.current);
+        }
       });
     }
   }, []);
@@ -77,7 +86,10 @@ export default function ScrubVideo({ src, poster, label = 'Drag to explore the p
     let cancelled = false;
     const markReady = () => {
       if (cancelled) return;
-      if (Number.isFinite(video.duration) && video.duration > 0) setReady(true);
+      if (Number.isFinite(video.duration) && video.duration > 0) {
+        setReady(true);
+        setDuration(video.duration);
+      }
     };
 
     const prime = async () => {
@@ -134,16 +146,59 @@ export default function ScrubVideo({ src, poster, label = 'Drag to explore the p
     }
   };
 
+  // Keyboard accessibility — arrow keys step through the clip.
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!ready) return;
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+    const step = video.duration / 24;
+    const half = video.duration / 8;
+    let next: number | null = null;
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        next = video.currentTime - step; // drag-right semantics: forward = backward in time
+        break;
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        next = video.currentTime + step;
+        break;
+      case 'PageUp':
+        next = video.currentTime - half;
+        break;
+      case 'PageDown':
+        next = video.currentTime + half;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = video.duration;
+        break;
+    }
+    if (next !== null) {
+      e.preventDefault();
+      if (!interacted) setInteracted(true);
+      scheduleSeek(next);
+    }
+  };
+
   return (
     <div
       ref={wrapperRef}
-      role="img"
+      role="slider"
+      tabIndex={0}
       aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={Number.isFinite(duration) ? duration : 0}
+      aria-valuenow={Number.isFinite(valueNow) ? valueNow : 0}
+      aria-orientation="horizontal"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      className={`relative w-full overflow-hidden bg-[var(--color-bg-secondary)] select-none ${
+      onKeyDown={handleKeyDown}
+      className={`relative w-full overflow-hidden bg-[var(--color-bg-secondary)] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 ${
         dragging ? 'cursor-grabbing' : 'cursor-ew-resize'
       } ${className || 'aspect-square'}`}
       style={{ touchAction: 'none' }}

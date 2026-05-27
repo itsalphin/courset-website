@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { CustomizationState } from '@/lib/types';
@@ -43,7 +43,12 @@ export default function JewelryModel({ state }: JewelryModelProps) {
   const color = METAL_COLORS[metalKey] || '#E6C87E';
   const props = METAL_PROPS[metalKey] || METAL_PROPS['yellow-gold-14'];
 
-  targetColor.current.set(color);
+  // Update the lerp target out of render — refs must not be written to during
+  // render (React 19 lint rule react-hooks/refs). A `useEffect([color])` is
+  // the correct seam: re-run only when the colour actually changes.
+  useEffect(() => {
+    targetColor.current.set(color);
+  }, [color]);
 
   useFrame(() => {
     if (materialRef.current) {

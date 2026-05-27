@@ -13,7 +13,9 @@ export default function ThreeCanvas({ state }: ThreeCanvasProps) {
   return (
     <Canvas
       dpr={[1, 1.5]}
-      frameloop="demand"
+      // `frameloop="demand"` pauses rendering when nothing changes — incompatible
+      // with `autoRotate`, which needs a frame every tick. Use "always".
+      frameloop="always"
       camera={{ position: [0, 0, 4], fov: 45 }}
       style={{ background: 'transparent' }}
     >

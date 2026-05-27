@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { EASE } from '@/lib/animations';
 import { useAuth } from '@/lib/auth-context';
@@ -48,9 +49,9 @@ export default function LoginPage() {
         >
           {/* Header */}
           <div className="text-center mb-10">
-            <a href="/" className="font-[family-name:var(--font-display)] text-3xl font-light tracking-[0.08em] text-[var(--color-text-primary)]">
+            <Link href="/" className="font-[family-name:var(--font-display)] text-3xl font-light tracking-[0.08em] text-[var(--color-text-primary)]">
               COURSET
-            </a>
+            </Link>
             <h1 className="mt-6 font-[family-name:var(--font-display)] text-2xl font-light text-[var(--color-text-primary)]">
               {isRegister ? 'Create Your Account' : 'Welcome Back'}
             </h1>
@@ -145,12 +146,12 @@ export default function LoginPage() {
 
           {!isRegister && (
             <div className="mt-4 text-center">
-              <a
+              <Link
                 href="/reset-password"
                 className="font-[family-name:var(--font-body)] text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-colors cursor-pointer"
               >
                 Forgot your password?
-              </a>
+              </Link>
             </div>
           )}
 
