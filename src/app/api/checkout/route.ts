@@ -5,19 +5,24 @@ import { createCheckoutSession } from '@/lib/server/stripe';
 import { prisma } from '@/lib/server/db';
 import { logAudit } from '@/lib/server/audit';
 import { rateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/server/request';
+import { resolvePriceCents } from '@/lib/server/price';
 
+// Note: priceInCents from the client is REFERENCE ONLY — the server recomputes
+// every line item's price via resolvePriceCents() before billing. Without that,
+// anyone could `POST {productId, priceInCents: 1}` and Stripe would accept it.
 const CheckoutSchema = z.object({
   items: z.array(z.object({
-    productId: z.string().max(50),
-    name: z.string().max(200),
-    priceInCents: z.number().int().positive().max(10_000_000),
+    productId: z.string().min(1).max(200),
+    name: z.string().min(1).max(200),
+    priceInCents: z.number().int().nonnegative().max(10_000_000), // reference only — see above
     quantity: z.number().int().positive().max(10),
     customization: z.string().max(2000).optional(),
   })).min(1).max(20),
 }).strict();
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') || 'unknown';
+  const ip = getClientIp(req);
   const { allowed } = rateLimit(`checkout:${ip}`, 5, 60_000);
   if (!allowed) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
@@ -46,11 +51,41 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const url = await createCheckoutSession(parsed.data.items, user.id, user.email);
+    // Recompute every price server-side. Any unknown product id is rejected.
+    const sanitizedItems: { productId: string; name: string; priceInCents: number; quantity: number; customization?: string }[] = [];
+    for (const item of parsed.data.items) {
+      const canonical = resolvePriceCents(item.productId);
+      if (canonical === null) {
+        await logAudit({
+          userId: user.id, action: 'checkout.create', outcome: 'failure',
+          ipAddress: ip, severity: 'warn',
+          details: { reason: 'unknown_product', productId: item.productId },
+        });
+        return NextResponse.json({ error: `Unknown product: ${item.productId}` }, { status: 400 });
+      }
+      // Surface client/server price drift in the audit log — useful for detecting
+      // stale UI or potential tampering — but always bill the server price.
+      if (canonical !== item.priceInCents) {
+        await logAudit({
+          userId: user.id, action: 'checkout.create', outcome: 'success',
+          ipAddress: ip, severity: 'info',
+          details: { reason: 'price_recomputed', productId: item.productId, clientPriceCents: item.priceInCents, serverPriceCents: canonical },
+        });
+      }
+      sanitizedItems.push({
+        productId: item.productId,
+        name: item.name,
+        priceInCents: canonical,
+        quantity: item.quantity,
+        customization: item.customization,
+      });
+    }
+
+    const url = await createCheckoutSession(sanitizedItems, user.id, user.email);
 
     await logAudit({
       userId: user.id, action: 'checkout.create', outcome: 'success',
-      ipAddress: ip, details: { itemCount: parsed.data.items.length },
+      ipAddress: ip, details: { itemCount: sanitizedItems.length },
     });
 
     return NextResponse.json({ url });
