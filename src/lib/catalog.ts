@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------------
 
 export type Form = 'ball' | 'paddle' | 'court';
-export type WearType = 'pendant' | 'earring';
+export type WearType = 'pendant' | 'earring' | 'necklace';
 export type AxisKind = 'visual' | 'informational';
 
 /** Metal COLOR is visual (changes the photo). */
@@ -67,6 +67,12 @@ export const BALL_ACCENTS = [
   { id: 'gold', label: 'With Gold Ball Accent', priceAdd: 120, kind: 'visual' as AxisKind },
 ];
 
+/** Necklace orientation — VISUAL, court-outline family (vertical = GUP0001 vs horizontal = GUP0010). */
+export const ORIENTATIONS = [
+  { id: 'horizontal', label: 'Horizontal', kind: 'visual' as AxisKind },
+  { id: 'vertical', label: 'Vertical', kind: 'visual' as AxisKind },
+];
+
 /** Chain length — INFORMATIONAL, pendant family. */
 export const CHAIN_LENGTHS = [
   { id: 16, label: '16"', priceAdd: 0, kind: 'informational' as AxisKind },
@@ -106,6 +112,7 @@ export interface Piece {
     enamelColor?: string[];
     earringBack?: string[];
     ballAccent?: string[];
+    orientation?: string[];
     chainLength?: number[];
     caratVersion?: number[];
     cutGrade?: string[];
@@ -207,11 +214,13 @@ export const CATALOG: Piece[] = [
   },
 
   // ========================= COURT / BAR FAMILY =========================
+  // These are court-themed BAR NECKLACES (horizontal or vertical bar hung from
+  // a chain), not pendants. wearType is 'necklace'.
   {
-    id: 'court-pendant-plain',
-    name: 'Pickleball Court Pendant — Polished',
+    id: 'court-necklace-plain',
+    name: 'Pickleball Court Necklace — Polished',
     codes: ['PICKLE BALL COURT'],
-    form: 'court', wearType: 'pendant',
+    form: 'court', wearType: 'necklace',
     siteProductId: null,
     basePrice: 650, // TODO
     axes: {
@@ -221,32 +230,34 @@ export const CATALOG: Piece[] = [
       chainLength: [16, 18, 20],
     },
     defaults: { treatment: 'plain', metalColor: 'white', karat: '14k', chainLength: 18 },
-    video: null, imageBase: '/images/catalog/court-pendant-plain',
+    video: null, imageBase: '/images/catalog/court-necklace-plain',
   },
   {
-    id: 'court-pendant-outline',
-    name: 'Court Bar — Diamond Outline',
+    id: 'court-necklace-outline',
+    name: 'Court Bar Necklace — Diamond Outline',
     codes: ['ASP0419', 'ASP0420', 'GUP0010-50', 'GUP0010-VZ', 'GUP0001-50', 'GUP0001-VZ'],
-    form: 'court', wearType: 'pendant',
+    form: 'court', wearType: 'necklace',
     siteProductId: null,
     basePrice: 1200, // TODO  (catalog .65CT)
     axes: {
       treatment: ['outline'],
       accent: ['diamond'],
       metalColor: ['yellow', 'white'],
+      orientation: ['horizontal', 'vertical'],
       karat: ['14k', '18k'],
       chainLength: [16, 18, 20],
       cutGrade: ['vg', 'ex', 'id'],
       clarity: ['vs', 'vvs', 'if'],
     },
-    defaults: { treatment: 'outline', accent: 'diamond', metalColor: 'white', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
-    video: null, imageBase: '/images/catalog/court-pendant-outline',
+    defaults: { treatment: 'outline', accent: 'diamond', metalColor: 'white', orientation: 'horizontal', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
+    video: null, imageBase: '/images/catalog/court-necklace-outline',
+    notes: 'orientation=horizontal → GUP0010 family · orientation=vertical → GUP0001 family.',
   },
   {
-    id: 'court-pendant-pave',
-    name: 'Court Bar — Full Pavé / Baguette',
+    id: 'court-necklace-pave',
+    name: 'Court Bar Necklace — Full Pavé / Baguette',
     codes: ['GSP0480', 'GSP0481', 'GSP0482EM', 'GUP0011-50', 'GUP0011-VZ', 'GUP0012-50', 'GUP0012-VZ'],
-    form: 'court', wearType: 'pendant',
+    form: 'court', wearType: 'necklace',
     siteProductId: null,
     basePrice: 6800, // TODO  (catalog 8.40–9.00CT — high end)
     axes: {
@@ -259,14 +270,14 @@ export const CATALOG: Piece[] = [
       clarity: ['vs', 'vvs', 'if'],
     },
     defaults: { treatment: 'pave', accent: 'diamond', metalColor: 'white', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
-    video: null, imageBase: '/images/catalog/court-pendant-pave',
-    notes: 'High-stone-count → route to concierge above price threshold.',
+    video: null, imageBase: '/images/catalog/court-necklace-pave',
+    notes: 'treatment=baguette = solid metal frame; treatment=pave = full pavé border. Both layouts hold 4 emerald-cut stones + central pavé bar.',
   },
   {
-    id: 'court-pendant-enamel',
-    name: 'Court Bar — Enamel Colors',
+    id: 'court-necklace-enamel',
+    name: 'Court Bar Necklace — Enamel Colors',
     codes: ['GSP0483', 'GSP0484', 'GUP0014-50', 'GUP0014-VZ'],
-    form: 'court', wearType: 'pendant',
+    form: 'court', wearType: 'necklace',
     siteProductId: null,
     basePrice: 2400, // TODO  (.70CT + enamel)
     axes: {
@@ -278,7 +289,7 @@ export const CATALOG: Piece[] = [
       chainLength: [16, 18, 20],
     },
     defaults: { treatment: 'pave', accent: 'enamel', enamelColor: 'blue-green', metalColor: 'white', karat: '14k', chainLength: 18 },
-    video: null, imageBase: '/images/catalog/court-pendant-enamel',
+    video: null, imageBase: '/images/catalog/court-necklace-enamel',
     notes: 'Enamel court-color is the most ownable feature. Custom color pairs = strong upsell.',
   },
 ];
@@ -298,6 +309,7 @@ export function imagePath(piece: Piece, sel: Record<string, string | number>): s
   const parts = [
     sel.metalColor,
     sel.treatment,
+    sel.orientation, // court-outline necklace: horizontal vs vertical
     sel.accent && sel.accent !== 'diamond' ? sel.accent : null, // diamond is the default, omit
     sel.enamelColor,
     hasStones ? sel.caratVersion : null,

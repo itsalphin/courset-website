@@ -94,7 +94,7 @@ export default function CustomizeExperience() {
       price,
       priceDisplay: formatPrice(price),
       collection: 'victory',
-      category: piece.wearType === 'earring' ? 'earrings' : 'pendant',
+      category: piece.wearType === 'earring' ? 'earrings' : piece.wearType === 'necklace' ? 'necklace' : 'pendant',
       description: piece.name,
       badges: [],
       occasions: [],
