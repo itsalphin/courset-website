@@ -4,21 +4,32 @@ import argon2 from 'argon2';
 import { prisma } from './db';
 
 /**
- * Required secrets — refuse to start in production if any are missing. In
- * development, fall back to known literals so local dev still works but emits
- * a loud warning so misconfig is obvious.
+ * Lazy secret resolver. Required secrets refuse to serve in production if
+ * they're missing — but the throw is deferred to first use so `next build`
+ * doesn't fail page-data collection when env vars are absent at build time.
+ * In development, fall back to known literals so local dev still works,
+ * with a loud warning so misconfig is obvious.
  */
-function requireSecret(name: string, devFallback: string): string {
+const secretCache = new Map<string, string>();
+function getSecret(name: string, devFallback: string): string {
+  const cached = secretCache.get(name);
+  if (cached !== undefined) return cached;
+
   const value = process.env[name];
-  if (value && value.length > 0) return value;
+  if (value && value.length > 0) {
+    secretCache.set(name, value);
+    return value;
+  }
   if (process.env.NODE_ENV === 'production') {
     throw new Error(`Required environment variable ${name} is not set`);
   }
   console.warn(`[auth] ${name} not set — using insecure dev fallback. DO NOT deploy this way.`);
+  secretCache.set(name, devFallback);
   return devFallback;
 }
 
-const JWT_ACCESS_SECRET = requireSecret('JWT_ACCESS_SECRET', 'dev-access-secret-do-not-use-in-prod');
+const ACCESS_SECRET_NAME = 'JWT_ACCESS_SECRET';
+const ACCESS_SECRET_DEV = 'dev-access-secret-do-not-use-in-prod';
 // Refresh tokens are random bytes (not JWT); JWT_REFRESH_SECRET intentionally omitted.
 
 const MAX_FAILED_LOGINS = 5;
@@ -48,14 +59,16 @@ interface TokenPayload {
 }
 
 export function generateAccessToken(userId: string, role: string): string {
-  return jwt.sign({ sub: userId, role, type: 'access' } as TokenPayload, JWT_ACCESS_SECRET, {
-    expiresIn: '15m',
-  });
+  return jwt.sign(
+    { sub: userId, role, type: 'access' } as TokenPayload,
+    getSecret(ACCESS_SECRET_NAME, ACCESS_SECRET_DEV),
+    { expiresIn: '15m' },
+  );
 }
 
 export function verifyAccessToken(token: string): TokenPayload | null {
   try {
-    return jwt.verify(token, JWT_ACCESS_SECRET) as TokenPayload;
+    return jwt.verify(token, getSecret(ACCESS_SECRET_NAME, ACCESS_SECRET_DEV)) as TokenPayload;
   } catch {
     return null;
   }
@@ -206,22 +219,26 @@ export async function validatePasswordResetToken(token: string): Promise<string 
 
 // ══════════ FIELD ENCRYPTION ══════════
 
-const ENCRYPTION_KEY = Buffer.from(
-  requireSecret('FIELD_ENCRYPTION_KEY', '0'.repeat(64)),
-  'hex',
-);
+const ENCRYPTION_KEY_NAME = 'FIELD_ENCRYPTION_KEY';
+const ENCRYPTION_KEY_DEV = '0'.repeat(64);
+
+function getEncryptionKey(): Buffer {
+  return Buffer.from(getSecret(ENCRYPTION_KEY_NAME, ENCRYPTION_KEY_DEV), 'hex');
+}
 
 export function encryptField(plaintext: string): string {
+  const key = getEncryptionKey();
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv('aes-256-gcm', ENCRYPTION_KEY, iv);
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
   const authTag = cipher.getAuthTag();
   return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`;
 }
 
 export function decryptField(ciphertext: string): string {
+  const key = getEncryptionKey();
   const [ivHex, authTagHex, encryptedHex] = ciphertext.split(':');
-  const decipher = crypto.createDecipheriv('aes-256-gcm', ENCRYPTION_KEY, Buffer.from(ivHex, 'hex'));
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(ivHex, 'hex'));
   decipher.setAuthTag(Buffer.from(authTagHex, 'hex'));
   return decipher.update(encryptedHex, 'hex', 'utf8') + decipher.final('utf8');
 }
