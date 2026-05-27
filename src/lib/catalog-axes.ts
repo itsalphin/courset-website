@@ -52,7 +52,8 @@ const INFO_ORDER = ['karat', 'cutGrade', 'clarity', 'chainLength'];
 
 function resolve(piece: Piece, key: string): ResolvedAxis | null {
   const allowed = (piece.axes as Record<string, (string | number)[] | undefined>)[key];
-  if (!allowed || allowed.length === 0) return null;
+  // Skip empty axes AND single-option axes — a one-button picker has no real choice.
+  if (!allowed || allowed.length < 2) return null;
 
   const meta = META[key];
   let options: AxisOption[];

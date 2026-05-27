@@ -214,24 +214,9 @@ export const CATALOG: Piece[] = [
   },
 
   // ========================= COURT / BAR FAMILY =========================
-  // These are court-themed BAR NECKLACES (horizontal or vertical bar hung from
-  // a chain), not pendants. wearType is 'necklace'.
-  {
-    id: 'court-necklace-plain',
-    name: 'Pickleball Court Necklace — Polished',
-    codes: ['PICKLE BALL COURT'],
-    form: 'court', wearType: 'necklace',
-    siteProductId: null,
-    basePrice: 650, // TODO
-    axes: {
-      treatment: ['plain'],
-      metalColor: ['yellow', 'white'],
-      karat: ['14k', '18k'],
-      chainLength: [16, 18, 20],
-    },
-    defaults: { treatment: 'plain', metalColor: 'white', karat: '14k', chainLength: 18 },
-    video: null, imageBase: '/images/catalog/court-necklace-plain',
-  },
+  // Court-themed BAR NECKLACES — rectangular bar hung from a chain. wearType is
+  // 'necklace'. Trimmed to only the configurations real catalog imagery exists
+  // for; expand axes here as more imagery lands.
   {
     id: 'court-necklace-outline',
     name: 'Court Bar Necklace — Diamond Outline',
@@ -240,8 +225,6 @@ export const CATALOG: Piece[] = [
     siteProductId: null,
     basePrice: 1200, // TODO  (catalog .65CT)
     axes: {
-      treatment: ['outline'],
-      accent: ['diamond'],
       metalColor: ['yellow', 'white'],
       orientation: ['horizontal', 'vertical'],
       karat: ['14k', '18k'],
@@ -251,18 +234,17 @@ export const CATALOG: Piece[] = [
     },
     defaults: { treatment: 'outline', accent: 'diamond', metalColor: 'white', orientation: 'horizontal', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
     video: null, imageBase: '/images/catalog/court-necklace-outline',
-    notes: 'orientation=horizontal → GUP0010 family · orientation=vertical → GUP0001 family.',
+    notes: 'orientation=horizontal → GUP0010 family · orientation=vertical → GUP0001 family. Treatment is implicit (outline).',
   },
   {
     id: 'court-necklace-pave',
     name: 'Court Bar Necklace — Full Pavé / Baguette',
-    codes: ['GSP0480', 'GSP0481', 'GSP0482EM', 'GUP0011-50', 'GUP0011-VZ', 'GUP0012-50', 'GUP0012-VZ'],
+    codes: ['GSP0480', 'GSP0481', 'GUP0011-50', 'GUP0011-VZ', 'GUP0012-50', 'GUP0012-VZ'],
     form: 'court', wearType: 'necklace',
     siteProductId: null,
     basePrice: 6800, // TODO  (catalog 8.40–9.00CT — high end)
     axes: {
       treatment: ['pave', 'baguette'],
-      accent: ['diamond', 'emerald'],
       metalColor: ['yellow', 'white'],
       karat: ['14k', '18k'],
       chainLength: [16, 18, 20],
@@ -271,7 +253,7 @@ export const CATALOG: Piece[] = [
     },
     defaults: { treatment: 'pave', accent: 'diamond', metalColor: 'white', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
     video: null, imageBase: '/images/catalog/court-necklace-pave',
-    notes: 'treatment=baguette = solid metal frame; treatment=pave = full pavé border. Both layouts hold 4 emerald-cut stones + central pavé bar.',
+    notes: 'treatment=baguette = solid metal frame; treatment=pave = full pavé border. Both hold 4 emerald-cut stones + central pavé bar. Emerald-accent variant (GSP0482EM) removed until imagery lands.',
   },
   {
     id: 'court-necklace-enamel',
@@ -281,16 +263,14 @@ export const CATALOG: Piece[] = [
     siteProductId: null,
     basePrice: 2400, // TODO  (.70CT + enamel)
     axes: {
-      treatment: ['pave', 'plain'],
-      accent: ['enamel'],
       enamelColor: ['blue-green'],
       metalColor: ['yellow', 'white'],
       karat: ['14k', '18k'],
       chainLength: [16, 18, 20],
     },
-    defaults: { treatment: 'pave', accent: 'enamel', enamelColor: 'blue-green', metalColor: 'white', karat: '14k', chainLength: 18 },
+    defaults: { accent: 'enamel', enamelColor: 'blue-green', metalColor: 'white', karat: '14k', chainLength: 18 },
     video: null, imageBase: '/images/catalog/court-necklace-enamel',
-    notes: 'Enamel court-color is the most ownable feature. Custom color pairs = strong upsell.',
+    notes: 'Treatment is implicit per metal (yellow=plain frame, white=pavé border). Each metal ships in its own canonical frame style.',
   },
 ];
 
