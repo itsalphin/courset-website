@@ -5,13 +5,14 @@ import { createPasswordResetToken, validatePasswordResetToken, hashPassword, inv
 import { sendPasswordResetEmail } from '@/lib/server/email';
 import { logAudit } from '@/lib/server/audit';
 import { rateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/server/request';
 
 const RequestSchema = z.object({ email: z.string().email().toLowerCase().trim() }).strict();
-const ResetSchema = z.object({ token: z.string().min(1), password: z.string().min(12).max(128) }).strict();
+const ResetSchema = z.object({ token: z.string().min(1).max(256), password: z.string().min(12).max(128) }).strict();
 
 // POST /api/auth/reset-password — request a reset
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') || 'unknown';
+  const ip = getClientIp(req);
   const { allowed } = rateLimit(`reset:${ip}`, 3, 3600_000);
   if (!allowed) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
@@ -42,6 +43,14 @@ export async function POST(req: NextRequest) {
 
 // PUT /api/auth/reset-password — execute the reset
 export async function PUT(req: NextRequest) {
+  const ip = getClientIp(req);
+  // Brute-forcing a 256-bit token is infeasible, but rate-limiting the
+  // redemption endpoint costs nothing and prevents log flooding.
+  const { allowed } = rateLimit(`reset-redeem:${ip}`, 10, 3600_000);
+  if (!allowed) {
+    return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const parsed = ResetSchema.safeParse(body);
@@ -63,7 +72,7 @@ export async function PUT(req: NextRequest) {
     // Invalidate all sessions on password change
     await invalidateAllSessions(user.id);
 
-    await logAudit({ userId: user.id, action: 'auth.password_reset', outcome: 'success', ipAddress: req.headers.get('x-forwarded-for') || '' });
+    await logAudit({ userId: user.id, action: 'auth.password_reset', outcome: 'success', ipAddress: ip });
 
     return NextResponse.json({ message: 'Password has been reset. Please log in.' });
   } catch {

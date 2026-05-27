@@ -26,24 +26,33 @@ export async function POST(req: NextRequest) {
 
         const totalCents = session.amount_total || 0;
 
-        const order = await prisma.order.create({
-          data: {
-            userId,
-            status: 'paid',
-            totalCents,
-            stripeSessionId: session.id,
-            stripePaymentId: session.payment_intent as string,
-            shippingAddress: JSON.stringify((session as unknown as { shipping_details?: unknown }).shipping_details ?? null),
-          },
+        // Idempotent: Stripe retries webhooks on transient failures. The
+        // stripeSessionId is `@unique`, so upsert turns retries into no-ops.
+        const orderData = {
+          userId,
+          status: 'paid',
+          totalCents,
+          stripeSessionId: session.id,
+          stripePaymentId: session.payment_intent as string,
+          shippingAddress: JSON.stringify((session as unknown as { shipping_details?: unknown }).shipping_details ?? null),
+        };
+        const order = await prisma.order.upsert({
+          where: { stripeSessionId: session.id },
+          create: orderData,
+          update: {}, // Already recorded — Stripe is retrying; don't mutate.
         });
 
-        await logAudit({
-          userId, action: 'order.paid', outcome: 'success',
-          resource: order.id, details: { totalCents },
-        });
+        const isNewOrder = order.createdAt.getTime() === order.updatedAt.getTime();
 
-        const total = `$${(totalCents / 100).toLocaleString()}`;
-        await sendOrderConfirmationEmail(user.email, order.id, total);
+        if (isNewOrder) {
+          await logAudit({
+            userId, action: 'order.paid', outcome: 'success',
+            resource: order.id, details: { totalCents },
+          });
+
+          const total = `$${(totalCents / 100).toLocaleString()}`;
+          await sendOrderConfirmationEmail(user.email, order.id, total);
+        }
         break;
       }
 

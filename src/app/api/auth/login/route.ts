@@ -5,6 +5,7 @@ import { verifyPassword, generateAccessToken, generateRefreshToken, createSessio
 import { logAudit } from '@/lib/server/audit';
 import { sendLoginAlertEmail } from '@/lib/server/email';
 import { rateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/server/request';
 
 const LoginSchema = z.object({
   email: z.string().email().max(254).toLowerCase().trim(),
@@ -12,8 +13,16 @@ const LoginSchema = z.object({
 }).strict();
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') || 'unknown';
+  const ip = getClientIp(req);
   const ua = req.headers.get('user-agent') || '';
+
+  // Per-IP brake-pad — independent of email so attackers can't bypass the
+  // per-(ip+email) limiter just by rotating email addresses (which would also
+  // be a user-enumeration channel).
+  const ipLimit = rateLimit(`login:${ip}`, 30, 900_000);
+  if (!ipLimit.allowed) {
+    return NextResponse.json({ error: 'Too many login attempts. Please try again later.' }, { status: 429 });
+  }
 
   try {
     const body = await req.json();

@@ -22,20 +22,31 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  // Access token lives in memory only. Storing it in localStorage exposes it
+  // to any XSS that lands on the page. The httpOnly refresh-token cookie is
+  // what survives reloads — we exchange it for a fresh access token on mount.
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Try to restore session on mount
+  // Try to restore a session by exchanging the httpOnly refresh cookie for a
+  // new access token. No secrets touch localStorage.
   useEffect(() => {
-    const stored = localStorage.getItem('courset-user');
-    const token = localStorage.getItem('courset-token');
-    if (stored && token) {
+    let cancelled = false;
+    (async () => {
       try {
-        setUser(JSON.parse(stored));
-        setAccessToken(token);
-      } catch {}
-    }
-    setIsLoading(false);
+        const res = await fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' });
+        if (!cancelled && res.ok) {
+          const data = await res.json();
+          if (data.accessToken) setAccessToken(data.accessToken);
+          if (data.user) setUser(data.user);
+        }
+      } catch {
+        // No refresh cookie or refresh failed — user stays signed out.
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -44,14 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) return { success: false, error: data.error };
 
       setUser(data.user);
       setAccessToken(data.accessToken);
-      localStorage.setItem('courset-user', JSON.stringify(data.user));
-      localStorage.setItem('courset-token', data.accessToken);
       return { success: true };
     } catch {
       return { success: false, error: 'An error occurred.' };
@@ -64,14 +74,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) return { success: false, error: data.error };
 
       setUser(data.user);
       setAccessToken(data.accessToken);
-      localStorage.setItem('courset-user', JSON.stringify(data.user));
-      localStorage.setItem('courset-token', data.accessToken);
       return { success: true };
     } catch {
       return { success: false, error: 'An error occurred.' };
@@ -79,11 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
     setUser(null);
     setAccessToken(null);
-    localStorage.removeItem('courset-user');
-    localStorage.removeItem('courset-token');
   };
 
   return (

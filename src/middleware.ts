@@ -10,12 +10,25 @@ export function middleware(req: NextRequest) {
 
   // ═══ CSRF: Verify Origin on state-changing requests ═══
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
-    const origin = req.headers.get('origin');
-    const host = req.headers.get('host');
-
-    // Skip for Stripe webhooks (they have their own signature verification)
+    // Skip for Stripe webhooks (signature verification handles it).
     if (!req.nextUrl.pathname.startsWith('/api/webhook')) {
-      if (origin && host && !origin.includes(host)) {
+      const origin = req.headers.get('origin');
+      const host = req.headers.get('host');
+
+      // Require both — a missing Origin on a state-changing request is itself suspicious.
+      if (!origin || !host) {
+        return new NextResponse('CSRF validation failed: missing origin', { status: 403 });
+      }
+
+      // Parse the Origin URL and compare the EXACT host — not substring/includes,
+      // which is bypassable via subdomain confusion (e.g. localhost:3000.attacker.com).
+      let originHost: string;
+      try {
+        originHost = new URL(origin).host;
+      } catch {
+        return new NextResponse('CSRF validation failed: invalid origin', { status: 403 });
+      }
+      if (originHost !== host) {
         return new NextResponse('CSRF validation failed', { status: 403 });
       }
     }

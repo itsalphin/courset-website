@@ -3,6 +3,7 @@ import { verifyAccessToken } from './auth';
 import { isIPBlocked } from './audit';
 import { hasPermission } from './audit';
 import { rateLimit } from '../rate-limit';
+import { getClientIp } from './request';
 
 type RouteHandler = (
   req: NextRequest,
@@ -47,7 +48,7 @@ export function withRateLimit(
   handler: (req: NextRequest) => Promise<NextResponse>,
 ): (req: NextRequest) => Promise<NextResponse> {
   return async (req: NextRequest) => {
-    const ip = req.headers.get('x-forwarded-for') || 'unknown';
+    const ip = getClientIp(req);
     const key = `${req.nextUrl.pathname}:${ip}`;
     const { allowed } = rateLimit(key, maxRequests, windowMs);
 
@@ -66,7 +67,7 @@ export function withRateLimit(
 
 export function withWAF(handler: (req: NextRequest) => Promise<NextResponse>): (req: NextRequest) => Promise<NextResponse> {
   return async (req: NextRequest) => {
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const ip = getClientIp(req);
 
     // Check IP blacklist
     const blocked = await isIPBlocked(ip);
@@ -93,9 +94,24 @@ export function withCSRF(handler: (req: NextRequest) => Promise<NextResponse>): 
     }
 
     const origin = req.headers.get('origin');
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    if (!origin) {
+      // No Origin on a state-changing request → reject. (Same-origin browsers
+      // send Origin for state-changing methods; absence is suspicious.)
+      return NextResponse.json({ error: 'CSRF validation failed: missing origin' }, { status: 403 });
+    }
 
-    if (origin && !appUrl.startsWith(origin)) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    let originHost: string;
+    let appHost: string;
+    try {
+      originHost = new URL(origin).host;
+      appHost = new URL(appUrl).host;
+    } catch {
+      return NextResponse.json({ error: 'CSRF validation failed: invalid origin' }, { status: 403 });
+    }
+
+    // Exact host match — prevents subdomain confusion bypasses.
+    if (originHost !== appHost) {
       return NextResponse.json({ error: 'CSRF validation failed' }, { status: 403 });
     }
 

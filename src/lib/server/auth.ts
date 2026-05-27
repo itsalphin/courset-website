@@ -3,8 +3,24 @@ import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 import { prisma } from './db';
 
-const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'dev-access-secret';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'dev-refresh-secret';
+/**
+ * Required secrets — refuse to start in production if any are missing. In
+ * development, fall back to known literals so local dev still works but emits
+ * a loud warning so misconfig is obvious.
+ */
+function requireSecret(name: string, devFallback: string): string {
+  const value = process.env[name];
+  if (value && value.length > 0) return value;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(`Required environment variable ${name} is not set`);
+  }
+  console.warn(`[auth] ${name} not set — using insecure dev fallback. DO NOT deploy this way.`);
+  return devFallback;
+}
+
+const JWT_ACCESS_SECRET = requireSecret('JWT_ACCESS_SECRET', 'dev-access-secret-do-not-use-in-prod');
+// Refresh tokens are random bytes (not JWT); JWT_REFRESH_SECRET intentionally omitted.
+
 const MAX_FAILED_LOGINS = 5;
 const LOCKOUT_MINUTES = 15;
 
@@ -190,7 +206,10 @@ export async function validatePasswordResetToken(token: string): Promise<string 
 
 // ══════════ FIELD ENCRYPTION ══════════
 
-const ENCRYPTION_KEY = Buffer.from(process.env.FIELD_ENCRYPTION_KEY || '0'.repeat(64), 'hex');
+const ENCRYPTION_KEY = Buffer.from(
+  requireSecret('FIELD_ENCRYPTION_KEY', '0'.repeat(64)),
+  'hex',
+);
 
 export function encryptField(plaintext: string): string {
   const iv = crypto.randomBytes(16);

@@ -57,9 +57,7 @@ export async function constructWebhookEvent(
   body: string,
   signature: string,
 ): Promise<Stripe.Event> {
-  return getStripe().webhooks.constructEvent(
-    body,
-    signature,
-    process.env.STRIPE_WEBHOOK_SECRET || '',
-  );
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) throw new Error('STRIPE_WEBHOOK_SECRET is not set');
+  return getStripe().webhooks.constructEvent(body, signature, secret);
 }
