@@ -45,7 +45,7 @@ export default function PreviewImage({ src, fallbackSrc, alt, loading = false }:
           quality={85}
           priority
           sizes="(max-width: 1024px) 100vw, 55vw"
-          className={`object-cover transition-opacity duration-300 ${loading ? 'opacity-60' : 'opacity-100'}`}
+          className="object-cover"
           onError={() => setFailed((f) => ({ ...f, [shown]: true }))}
         />
       ) : (
@@ -55,11 +55,11 @@ export default function PreviewImage({ src, fallbackSrc, alt, loading = false }:
         </div>
       )}
 
-      {/* Selection-change shimmer overlay (parent-controlled) */}
+      {/* Subtle selection-change pulse — quick tactile feedback, never obscures the image */}
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 bg-gradient-to-br from-white/45 via-white/10 to-white/45 transition-opacity duration-300 ${
-          loading ? 'opacity-100 animate-pulse' : 'opacity-0'
+        className={`pointer-events-none absolute inset-0 bg-white transition-opacity duration-150 ease-out ${
+          loading ? 'opacity-20' : 'opacity-0'
         }`}
       />
     </div>

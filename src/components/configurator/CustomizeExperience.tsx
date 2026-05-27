@@ -41,7 +41,7 @@ export default function CustomizeExperience() {
   const triggerLoading = () => {
     setImageLoading(true);
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
-    loadingTimer.current = setTimeout(() => setImageLoading(false), 450);
+    loadingTimer.current = setTimeout(() => setImageLoading(false), 180);
   };
 
   const piecesInForm = useMemo(() => byForm(form), [form]);

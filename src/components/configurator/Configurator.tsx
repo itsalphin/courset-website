@@ -34,7 +34,7 @@ export default function Configurator({ piece }: ConfiguratorProps) {
   const triggerLoading = () => {
     setImageLoading(true);
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
-    loadingTimer.current = setTimeout(() => setImageLoading(false), 450);
+    loadingTimer.current = setTimeout(() => setImageLoading(false), 180);
   };
 
   const visualAxes = useMemo(() => getVisualAxes(piece, sel), [piece, sel]);
