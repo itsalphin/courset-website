@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import SectionLabel from '@/components/ui/SectionLabel';
 import Reveal from '@/components/ui/Reveal';
 import { useCart } from '@/lib/cart-context';
@@ -15,7 +15,7 @@ import {
   type Form,
   type Piece,
 } from '@/lib/catalog';
-import { getVisualAxes, getInformationalAxes, enumeratePieceImagePaths, type ResolvedAxis } from '@/lib/catalog-axes';
+import { getVisualAxes, getInformationalAxes, type ResolvedAxis } from '@/lib/catalog-axes';
 import OptionSelector from './OptionSelector';
 import PreviewImage from './PreviewImage';
 import SpecSheet, { type SpecRow } from './SpecSheet';
@@ -34,22 +34,12 @@ export default function CustomizeExperience() {
   const [pieceId, setPieceId] = useState<string>(byForm('ball')[0].id);
   const [sel, setSel] = useState<Record<string, string | number>>({ ...byForm('ball')[0].defaults });
   const [added, setAdded] = useState(false);
-  const [imageLoading, setImageLoading] = useState(false);
-  const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  /** Brief "configuring" pulse on any axis change so every click feels tactile. */
-  const triggerLoading = () => {
-    setImageLoading(true);
-    if (loadingTimer.current) clearTimeout(loadingTimer.current);
-    loadingTimer.current = setTimeout(() => setImageLoading(false), 180);
-  };
 
   const piecesInForm = useMemo(() => byForm(form), [form]);
   const piece: Piece = piecesInForm.find((p) => p.id === pieceId) ?? piecesInForm[0];
 
   const visualAxes = useMemo(() => getVisualAxes(piece, sel), [piece, sel]);
   const infoAxes = useMemo(() => getInformationalAxes(piece, sel), [piece, sel]);
-  const prefetchSrcs = useMemo(() => enumeratePieceImagePaths(piece), [piece]);
 
   // Synthetic axes so the silhouette + style pickers reuse OptionSelector styling.
   const formAxis: ResolvedAxis = { key: '__form', label: 'Silhouette', kind: 'visual', options: FORMS.map((f) => ({ id: f.id, label: f.label })) };
@@ -60,17 +50,14 @@ export default function CustomizeExperience() {
     setForm(f);
     setPieceId(first.id);
     setSel({ ...first.defaults });
-    triggerLoading();
   };
   const choosePiece = (id: string) => {
     const p = piecesInForm.find((x) => x.id === id) ?? piecesInForm[0];
     setPieceId(p.id);
     setSel({ ...p.defaults });
-    triggerLoading();
   };
   const setAxis = (key: string, value: string | number) => {
     setSel((s) => ({ ...s, [key]: value }));
-    triggerLoading();
   };
 
   const price = estimatePrice(piece, sel);
@@ -131,8 +118,6 @@ export default function CustomizeExperience() {
               src={previewSrc}
               fallbackSrc={fallbackSrc}
               alt={piece.name}
-              loading={imageLoading}
-              prefetchSrcs={prefetchSrcs}
             />
             {!fallbackSrc && (
               <p className="font-[family-name:var(--font-body)] text-[0.7rem] text-[var(--color-text-tertiary)]">
