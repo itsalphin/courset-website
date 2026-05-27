@@ -35,8 +35,10 @@ export default function PreviewImage({ src, fallbackSrc, alt, loading = false }:
       aria-busy={loading || undefined}
     >
       {shown ? (
+        // No `key` on purpose: keeping the same <img> element across src changes
+        // lets the browser hold the previous frame until the new one is decoded,
+        // so swaps don't flash to the background colour.
         <Image
-          key={shown}
           src={shown}
           alt={alt}
           fill
