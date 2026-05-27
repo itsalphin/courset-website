@@ -67,6 +67,12 @@ export const BALL_ACCENTS = [
   { id: 'gold', label: 'With Gold Ball Accent', priceAdd: 120, kind: 'visual' as AxisKind },
 ];
 
+/** Pendant orientation — VISUAL, court-outline family (vertical = GUP0001 vs horizontal = GUP0010). */
+export const ORIENTATIONS = [
+  { id: 'horizontal', label: 'Horizontal', kind: 'visual' as AxisKind },
+  { id: 'vertical', label: 'Vertical', kind: 'visual' as AxisKind },
+];
+
 /** Chain length — INFORMATIONAL, pendant family. */
 export const CHAIN_LENGTHS = [
   { id: 16, label: '16"', priceAdd: 0, kind: 'informational' as AxisKind },
@@ -106,6 +112,7 @@ export interface Piece {
     enamelColor?: string[];
     earringBack?: string[];
     ballAccent?: string[];
+    orientation?: string[];
     chainLength?: number[];
     caratVersion?: number[];
     cutGrade?: string[];
@@ -234,13 +241,15 @@ export const CATALOG: Piece[] = [
       treatment: ['outline'],
       accent: ['diamond'],
       metalColor: ['yellow', 'white'],
+      orientation: ['horizontal', 'vertical'],
       karat: ['14k', '18k'],
       chainLength: [16, 18, 20],
       cutGrade: ['vg', 'ex', 'id'],
       clarity: ['vs', 'vvs', 'if'],
     },
-    defaults: { treatment: 'outline', accent: 'diamond', metalColor: 'white', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
+    defaults: { treatment: 'outline', accent: 'diamond', metalColor: 'white', orientation: 'horizontal', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
     video: null, imageBase: '/images/catalog/court-pendant-outline',
+    notes: 'orientation=horizontal → GUP0010 family · orientation=vertical → GUP0001 family.',
   },
   {
     id: 'court-pendant-pave',
@@ -298,6 +307,7 @@ export function imagePath(piece: Piece, sel: Record<string, string | number>): s
   const parts = [
     sel.metalColor,
     sel.treatment,
+    sel.orientation, // court-outline pendant: horizontal vs vertical
     sel.accent && sel.accent !== 'diamond' ? sel.accent : null, // diamond is the default, omit
     sel.enamelColor,
     hasStones ? sel.caratVersion : null,
