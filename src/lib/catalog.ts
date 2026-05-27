@@ -61,6 +61,12 @@ export const EARRING_BACKS = [
   { id: 'post', label: 'Post / Stud', priceAdd: 0, kind: 'visual' as AxisKind },
 ];
 
+/** Ball accent on paddle face — VISUAL, paddle family only. */
+export const BALL_ACCENTS = [
+  { id: 'none', label: 'Paddle Only', priceAdd: 0, kind: 'visual' as AxisKind },
+  { id: 'gold', label: 'With Gold Ball Accent', priceAdd: 120, kind: 'visual' as AxisKind },
+];
+
 /** Chain length — INFORMATIONAL, pendant family. */
 export const CHAIN_LENGTHS = [
   { id: 16, label: '16"', priceAdd: 0, kind: 'informational' as AxisKind },
@@ -99,6 +105,7 @@ export interface Piece {
     accent?: string[];
     enamelColor?: string[];
     earringBack?: string[];
+    ballAccent?: string[];
     chainLength?: number[];
     caratVersion?: number[];
     cutGrade?: string[];
@@ -166,19 +173,20 @@ export const CATALOG: Piece[] = [
     name: 'Paddle Pavé Pendant',
     codes: ['GUP0006', 'GUP0006-VZ', 'GUP0007-50', 'GUP0007-VZ', 'PADDLE/.74CT/WG'],
     form: 'paddle', wearType: 'pendant',
-    siteProductId: 'paddle-pave-silver', // ⚠️ confirm — page already built
+    siteProductId: 'paddle-pave-silver',
     basePrice: 1450, // TODO
     axes: {
       treatment: ['pave'],
-      metalColor: ['yellow', 'white', 'twotone'],
+      metalColor: ['yellow', 'white'],
+      ballAccent: ['none', 'gold'], // GUP0006 = none · GUP0007 = with gold ball on face
       karat: ['14k', '18k'],
       chainLength: [16, 18, 20],
       cutGrade: ['vg', 'ex', 'id'],
       clarity: ['vs', 'vvs', 'if'],
     },
-    defaults: { treatment: 'pave', metalColor: 'white', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
+    defaults: { treatment: 'pave', metalColor: 'white', ballAccent: 'none', karat: '14k', chainLength: 18, cutGrade: 'ex', clarity: 'vs' },
     video: null, imageBase: '/images/catalog/paddle-pendant-pave',
-    notes: 'Two-tone (-V) shows a contrasting gold ball accent on a white paddle.',
+    notes: 'ballAccent=gold adds a small yellow-gold pickleball ball on the paddle face (GUP0007 family).',
   },
   {
     id: 'paddle-pendant-plain',
@@ -189,11 +197,12 @@ export const CATALOG: Piece[] = [
     basePrice: 890, // TODO
     axes: {
       treatment: ['plain'],
-      metalColor: ['yellow', 'white', 'twotone'],
+      metalColor: ['yellow', 'white'],
+      ballAccent: ['gold'], // textured paddles ship with the gold ball accent (GUP0004 / GUP0004-V)
       karat: ['14k', '18k'],
       chainLength: [16, 18, 20],
     },
-    defaults: { treatment: 'plain', metalColor: 'yellow', karat: '14k', chainLength: 18 },
+    defaults: { treatment: 'plain', metalColor: 'yellow', ballAccent: 'gold', karat: '14k', chainLength: 18 },
     video: null, imageBase: '/images/catalog/paddle-pendant-plain',
   },
 
@@ -293,6 +302,7 @@ export function imagePath(piece: Piece, sel: Record<string, string | number>): s
     sel.enamelColor,
     hasStones ? sel.caratVersion : null,
     sel.earringBack, // ball earrings differ lever vs post visually
+    sel.ballAccent === 'gold' ? 'ball' : null, // paddle ball-on-face variant
   ].filter((p) => p !== undefined && p !== null && p !== '');
   return `${piece.imageBase}/${parts.join('-')}.jpg`.toLowerCase();
 }
@@ -311,6 +321,9 @@ export function estimatePrice(piece: Piece, sel: Record<string, string | number>
 
   const accent = ACCENTS.find((a) => a.id === sel.accent);
   if (accent) p += accent.priceAdd;
+
+  const ballAccent = BALL_ACCENTS.find((b) => b.id === sel.ballAccent);
+  if (ballAccent) p += ballAccent.priceAdd;
 
   // Diamond-only math only applies when the piece is actually stoned.
   const hasStones = sel.treatment !== 'plain';

@@ -11,6 +11,7 @@ import {
   ACCENTS,
   ENAMEL_COLORS,
   EARRING_BACKS,
+  BALL_ACCENTS,
   CUT_GRADES,
   CLARITIES,
 } from './catalog';
@@ -36,6 +37,7 @@ const META: Record<string, { label: string; vocab?: Vocab }> = {
   accent: { label: 'Accent', vocab: ACCENTS },
   enamelColor: { label: 'Enamel Color', vocab: ENAMEL_COLORS },
   earringBack: { label: 'Earring Back', vocab: EARRING_BACKS },
+  ballAccent: { label: 'Ball Accent', vocab: BALL_ACCENTS },
   caratVersion: { label: 'Diamond Weight' }, // numeric
   karat: { label: 'Karat', vocab: KARATS },
   cutGrade: { label: 'Cut', vocab: CUT_GRADES },
@@ -43,7 +45,7 @@ const META: Record<string, { label: string; vocab?: Vocab }> = {
   chainLength: { label: 'Chain Length' }, // numeric
 };
 
-const VISUAL_ORDER = ['metalColor', 'treatment', 'accent', 'enamelColor', 'caratVersion', 'earringBack'];
+const VISUAL_ORDER = ['metalColor', 'treatment', 'accent', 'enamelColor', 'caratVersion', 'earringBack', 'ballAccent'];
 const INFO_ORDER = ['karat', 'cutGrade', 'clarity', 'chainLength'];
 
 function resolve(piece: Piece, key: string): ResolvedAxis | null {
