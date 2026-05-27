@@ -13,7 +13,7 @@ import {
   imagePath,
   CONCIERGE_PRICE_THRESHOLD,
 } from '@/lib/catalog';
-import { getVisualAxes, getInformationalAxes } from '@/lib/catalog-axes';
+import { getVisualAxes, getInformationalAxes, enumeratePieceImagePaths } from '@/lib/catalog-axes';
 import OptionSelector from './OptionSelector';
 import PreviewImage from './PreviewImage';
 import SpecSheet, { type SpecRow } from './SpecSheet';
@@ -30,6 +30,7 @@ export default function Configurator({ piece }: ConfiguratorProps) {
 
   const visualAxes = useMemo(() => getVisualAxes(piece, sel), [piece, sel]);
   const infoAxes = useMemo(() => getInformationalAxes(piece, sel), [piece, sel]);
+  const prefetchSrcs = useMemo(() => enumeratePieceImagePaths(piece), [piece]);
 
   const price = estimatePrice(piece, sel);
   const overThreshold = price > CONCIERGE_PRICE_THRESHOLD;
@@ -95,6 +96,7 @@ export default function Configurator({ piece }: ConfiguratorProps) {
               src={previewSrc}
               fallbackSrc={fallbackSrc}
               alt={piece.name}
+              prefetchSrcs={prefetchSrcs}
             />
             {!fallbackSrc && (
               <p className="font-[family-name:var(--font-body)] text-[0.7rem] text-[var(--color-text-tertiary)]">

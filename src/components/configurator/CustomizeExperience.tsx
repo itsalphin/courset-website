@@ -15,7 +15,7 @@ import {
   type Form,
   type Piece,
 } from '@/lib/catalog';
-import { getVisualAxes, getInformationalAxes, type ResolvedAxis } from '@/lib/catalog-axes';
+import { getVisualAxes, getInformationalAxes, enumeratePieceImagePaths, type ResolvedAxis } from '@/lib/catalog-axes';
 import OptionSelector from './OptionSelector';
 import PreviewImage from './PreviewImage';
 import SpecSheet, { type SpecRow } from './SpecSheet';
@@ -40,6 +40,7 @@ export default function CustomizeExperience() {
 
   const visualAxes = useMemo(() => getVisualAxes(piece, sel), [piece, sel]);
   const infoAxes = useMemo(() => getInformationalAxes(piece, sel), [piece, sel]);
+  const prefetchSrcs = useMemo(() => enumeratePieceImagePaths(piece), [piece]);
 
   // Synthetic axes so the silhouette + style pickers reuse OptionSelector styling.
   const formAxis: ResolvedAxis = { key: '__form', label: 'Silhouette', kind: 'visual', options: FORMS.map((f) => ({ id: f.id, label: f.label })) };
@@ -118,6 +119,7 @@ export default function CustomizeExperience() {
               src={previewSrc}
               fallbackSrc={fallbackSrc}
               alt={piece.name}
+              prefetchSrcs={prefetchSrcs}
             />
             {!fallbackSrc && (
               <p className="font-[family-name:var(--font-body)] text-[0.7rem] text-[var(--color-text-tertiary)]">

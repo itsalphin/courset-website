@@ -5,6 +5,7 @@
 import {
   type Piece,
   type AxisKind,
+  imagePath,
   METAL_COLORS,
   KARATS,
   TREATMENTS,
@@ -95,4 +96,26 @@ export function getInformationalAxes(piece: Piece, sel?: Record<string, string |
   return INFO_ORDER.map((k) => resolve(piece, k))
     .filter((a): a is ResolvedAxis => a !== null)
     .filter((a) => axisApplies(a.key, sel));
+}
+
+/**
+ * Every distinct catalog image path for a piece (cartesian product of visual
+ * axis options, deduped). Used to silently warm the Vercel image optimization
+ * cache for all variants the user might pick — same trick the rest of the site
+ * benefits from naturally, because pages like /collections list every image
+ * up-front and the cache stays warm.
+ */
+export function enumeratePieceImagePaths(piece: Piece): string[] {
+  const visualAxes = getVisualAxes(piece); // no sel filter → all axes
+  let combos: Array<Record<string, string | number>> = [{ ...piece.defaults }];
+  for (const axis of visualAxes) {
+    const next: Array<Record<string, string | number>> = [];
+    for (const combo of combos) {
+      for (const opt of axis.options) {
+        next.push({ ...combo, [axis.key]: opt.id });
+      }
+    }
+    combos = next;
+  }
+  return Array.from(new Set(combos.map((c) => imagePath(piece, c))));
 }
