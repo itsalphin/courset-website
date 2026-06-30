@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Luxury Pickleball Jewelry — E-Commerce
 
-## Getting Started
+Direct-to-consumer site for handcrafted pickleball-inspired fine jewelry. Editorial presentation, made-to-order configurator, Stripe checkout, white-glove concierge flow.
 
-First, run the development server:
+> **The full operational specification — architecture, data model, customer journey, fulfillment, marketing, compliance, security, vendor requests, costs, and 90-day launch plan — lives in [`Flagship_Build_Specification.pdf`](./Flagship_Build_Specification.pdf). Treat it as the source of truth; this README is the developer quick-start.**
+
+## ⚠️ Next.js 16
+
+This project runs on Next.js 16 — APIs, conventions, and file structure differ from earlier versions and from most LLM training data. Before writing code, read the relevant guide in `node_modules/next/dist/docs/` and heed deprecation notices. See [`AGENTS.md`](./AGENTS.md).
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install              # postinstall runs `prisma generate`
+cp .env.example .env     # fill in the secrets (see below)
+npm run dev              # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Other scripts:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Purpose |
+|---|---|
+| `npm run build` | Prisma generate + Next build |
+| `npm run start` | Run the production build |
+| `npm run lint` / `lint:fix` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Required env vars
 
-## Learn More
+Minimum to boot locally. Full list with rotation cadence in Appendix C of the Flagship PDF.
 
-To learn more about Next.js, take a look at the following resources:
+```
+DATABASE_URL=file:./dev.db
+JWT_ACCESS_SECRET=<openssl rand -hex 64>
+FIELD_ENCRYPTION_KEY=<openssl rand -hex 32>
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+RESEND_API_KEY=re_...
+FROM_EMAIL=concierge@yourdomain.com
+NODE_ENV=development
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 App Router · React 19 · TypeScript (strict) |
+| Styling | Tailwind 4 + CSS custom properties |
+| Motion | GSAP · Framer Motion · Lenis |
+| 3D | Three.js + React Three Fiber + Drei (lazy-loaded) |
+| Data | Prisma 7 with libSQL adapter (Turso in prod) |
+| Auth | Custom JWT — Argon2id passwords, refresh-token family rotation, AES-256-GCM field encryption |
+| Payments | Stripe Checkout + webhooks |
+| Email | Resend (transactional); Klaviyo (marketing) |
+| Validation | Zod 4 |
+| Deploy | Vercel |
 
-## Deploy on Vercel
+## Project layout
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+  app/                    App Router routes + API handlers
+    api/                  Route handlers (auth, checkout, webhook, admin, …)
+    customize/            Configurator + per-piece bespoke pages
+    collections/ story/ concierge/ cart/ profile/ login/ register/ product/
+    layout.tsx globals.css robots.ts sitemap.ts
+  components/             UI primitives, sections, layout, three/, customize/
+  hooks/                  Reusable client hooks
+  lib/                    Shared logic
+    server/               Server-only: auth, db, stripe, email, audit, middleware
+    catalog.ts pricing.ts bespoke/  Catalog, price engine, bespoke variant data
+  generated/prisma/       Prisma client (committed for Vercel deploy)
+  middleware.ts           Edge middleware (CSRF, WAF, rate limit hooks)
+prisma/schema.prisma      Database schema
+public/                   Images, videos, model assets
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+
+Production target is Vercel. Push to `main` triggers a deploy; ensure env vars from Appendix C are set in the Vercel dashboard. Database is Turso (libSQL) in production. There is no Docker setup — Vercel handles the runtime.
+
+## Source of truth
+
+For anything beyond the dev loop — data model, order state machine, fulfillment runbook, vendor questions, cost structure, legal posture — open [`Flagship_Build_Specification.pdf`](./Flagship_Build_Specification.pdf).
