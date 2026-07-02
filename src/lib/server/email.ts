@@ -13,6 +13,18 @@ const transporter = nodemailer.createTransport({
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 const FROM = process.env.EMAIL_FROM || 'COURSET <hello@courset.com>';
 
+/**
+ * Escape values before interpolating them into email HTML. Any value that
+ * originates from a request header (User-Agent, derived IP) is attacker-
+ * controlled — without escaping, a crafted User-Agent injects markup into the
+ * alert email rendered in the recipient's inbox.
+ */
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!),
+  );
+}
+
 async function sendEmail(to: string, subject: string, html: string): Promise<void> {
   if (process.env.NODE_ENV === 'development') {
     console.log(`[EMAIL] To: ${to} | Subject: ${subject}`);
@@ -52,8 +64,8 @@ export async function sendLoginAlertEmail(to: string, ip: string, userAgent: str
         A new login was detected on your account.
       </p>
       <p style="color: #6B6B6B; font-size: 14px;">
-        <strong>IP:</strong> ${ip}<br/>
-        <strong>Device:</strong> ${userAgent.substring(0, 100)}<br/>
+        <strong>IP:</strong> ${escapeHtml(ip)}<br/>
+        <strong>Device:</strong> ${escapeHtml(userAgent.substring(0, 100))}<br/>
         <strong>Time:</strong> ${new Date().toISOString()}
       </p>
       <p style="color: #999; font-size: 13px; margin-top: 24px;">

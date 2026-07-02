@@ -50,7 +50,7 @@ export function withRateLimit(
   return async (req: NextRequest) => {
     const ip = getClientIp(req);
     const key = `${req.nextUrl.pathname}:${ip}`;
-    const { allowed } = rateLimit(key, maxRequests, windowMs);
+    const { allowed } = await rateLimit(key, maxRequests, windowMs);
 
     if (!allowed) {
       return NextResponse.json(

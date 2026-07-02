@@ -156,8 +156,20 @@ export async function invalidateSession(token: string): Promise<void> {
   await prisma.session.deleteMany({ where: { token: tokenHash } });
 }
 
+export async function revokeRefreshToken(token: string): Promise<void> {
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+  await prisma.refreshToken.deleteMany({ where: { tokenHash } });
+}
+
 export async function invalidateAllSessions(userId: string): Promise<void> {
-  await prisma.session.deleteMany({ where: { userId } });
+  // Revoke BOTH sessions and refresh tokens. Access tokens are stateless JWTs
+  // gated on the refresh token, so deleting sessions alone leaves a valid
+  // 7-day refresh token that keeps minting access tokens — meaning a password
+  // reset would NOT evict an attacker. Kill the refresh tokens too.
+  await prisma.$transaction([
+    prisma.session.deleteMany({ where: { userId } }),
+    prisma.refreshToken.deleteMany({ where: { userId } }),
+  ]);
 }
 
 // ══════════ ACCOUNT LOCKOUT ══════════

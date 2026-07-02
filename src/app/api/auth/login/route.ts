@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   // Per-IP brake-pad — independent of email so attackers can't bypass the
   // per-(ip+email) limiter just by rotating email addresses (which would also
   // be a user-enumeration channel).
-  const ipLimit = rateLimit(`login:${ip}`, 30, 900_000);
+  const ipLimit = await rateLimit(`login:${ip}`, 30, 900_000);
   if (!ipLimit.allowed) {
     return NextResponse.json({ error: 'Too many login attempts. Please try again later.' }, { status: 429 });
   }
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const { email, password } = parsed.data;
 
     // Rate limit: 5 per 15 min per IP+email
-    const { allowed } = rateLimit(`login:${ip}:${email}`, 5, 900_000);
+    const { allowed } = await rateLimit(`login:${ip}:${email}`, 5, 900_000);
     if (!allowed) {
       await logAudit({ action: 'auth.login', outcome: 'blocked', ipAddress: ip, severity: 'warn', details: { email, reason: 'rate_limited' } });
       return NextResponse.json({ error: 'Too many login attempts. Please try again later.' }, { status: 429 });

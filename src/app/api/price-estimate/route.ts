@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { calculatePrice } from '@/lib/pricing';
 import { rateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/server/request';
 
 const VALID_SHAPES = ['paddle', 'ball', 'court', 'net', 'custom'] as const;
 const VALID_KARATS = [10, 14, 18, 24] as const;
@@ -11,8 +12,8 @@ const VALID_CLARITIES = ['VS2', 'VS1', 'VVS2', 'VVS1', 'IF'] as const;
 
 export async function POST(request: Request) {
   try {
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    const { allowed } = rateLimit(`price:${ip}`, 30, 60_000);
+    const ip = getClientIp(request);
+    const { allowed } = await rateLimit(`price:${ip}`, 30, 60_000);
     if (!allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },

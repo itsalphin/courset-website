@@ -4,6 +4,7 @@ import { prisma } from '@/lib/server/db';
 import { hashPassword, generateAccessToken, generateRefreshToken, createSession } from '@/lib/server/auth';
 import { logAudit } from '@/lib/server/audit';
 import { rateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/server/request';
 
 const RegisterSchema = z.object({
   email: z.string().email().max(254).toLowerCase().trim(),
@@ -12,10 +13,10 @@ const RegisterSchema = z.object({
 }).strict();
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') || 'unknown';
+  const ip = getClientIp(req);
 
   // Rate limit: 3 signups per hour per IP
-  const { allowed } = rateLimit(`register:${ip}`, 3, 3600_000);
+  const { allowed } = await rateLimit(`register:${ip}`, 3, 3600_000);
   if (!allowed) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   }

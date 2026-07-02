@@ -23,7 +23,7 @@ const CheckoutSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  const { allowed } = rateLimit(`checkout:${ip}`, 5, 60_000);
+  const { allowed } = await rateLimit(`checkout:${ip}`, 5, 60_000);
   if (!allowed) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   }
@@ -46,7 +46,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid checkout data' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+    const user = await prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { id: true, email: true },
+    });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

@@ -21,30 +21,41 @@ export async function POST(req: NextRequest) {
         const userId = session.metadata?.userId;
         if (!userId) break;
 
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        // Only fulfill once payment is actually captured. For card + mode:
+        // 'payment' this is synchronously 'paid', but async methods can
+        // complete the session as 'unpaid' — never mark those paid.
+        if (session.payment_status !== 'paid') break;
+
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { id: true, email: true },
+        });
         if (!user) break;
 
         const totalCents = session.amount_total || 0;
 
-        // Idempotent: Stripe retries webhooks on transient failures. The
-        // stripeSessionId is `@unique`, so upsert turns retries into no-ops.
-        const orderData = {
-          userId,
-          status: 'paid',
-          totalCents,
-          stripeSessionId: session.id,
-          stripePaymentId: session.payment_intent as string,
-          shippingAddress: JSON.stringify((session as unknown as { shipping_details?: unknown }).shipping_details ?? null),
-        };
-        const order = await prisma.order.upsert({
+        // Idempotent: Stripe retries webhooks on transient failures. Decide
+        // "is this the first time we've seen this session?" from the DB BEFORE
+        // writing, so the side effects (email, audit) fire exactly once. The
+        // previous createdAt===updatedAt check re-fired on every retry because
+        // the upsert's empty update never advanced updatedAt.
+        const existing = await prisma.order.findUnique({
           where: { stripeSessionId: session.id },
-          create: orderData,
-          update: {}, // Already recorded — Stripe is retrying; don't mutate.
+          select: { id: true },
         });
 
-        const isNewOrder = order.createdAt.getTime() === order.updatedAt.getTime();
+        const order = existing ?? await prisma.order.create({
+          data: {
+            userId,
+            status: 'paid',
+            totalCents,
+            stripeSessionId: session.id,
+            stripePaymentId: session.payment_intent as string,
+            shippingAddress: JSON.stringify((session as unknown as { shipping_details?: unknown }).shipping_details ?? null),
+          },
+        });
 
-        if (isNewOrder) {
+        if (!existing) {
           await logAudit({
             userId, action: 'order.paid', outcome: 'success',
             resource: order.id, details: { totalCents },

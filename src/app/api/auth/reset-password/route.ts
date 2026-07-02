@@ -13,7 +13,7 @@ const ResetSchema = z.object({ token: z.string().min(1).max(256), password: z.st
 // POST /api/auth/reset-password — request a reset
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  const { allowed } = rateLimit(`reset:${ip}`, 3, 3600_000);
+  const { allowed } = await rateLimit(`reset:${ip}`, 3, 3600_000);
   if (!allowed) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   }
@@ -46,7 +46,7 @@ export async function PUT(req: NextRequest) {
   const ip = getClientIp(req);
   // Brute-forcing a 256-bit token is infeasible, but rate-limiting the
   // redemption endpoint costs nothing and prevents log flooding.
-  const { allowed } = rateLimit(`reset-redeem:${ip}`, 10, 3600_000);
+  const { allowed } = await rateLimit(`reset-redeem:${ip}`, 10, 3600_000);
   if (!allowed) {
     return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
   }

@@ -15,7 +15,14 @@ const securityHeaders = [
       key: 'Content-Security-Policy',
       value: [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+        // No 'unsafe-eval' — React/Next don't use eval() in production, so
+        // blocking it kills a whole class of injected-payload execution.
+        // 'wasm-unsafe-eval' narrowly permits WebAssembly (e.g. a Three.js
+        // decoder) without re-opening JS eval. 'unsafe-inline' remains only
+        // because removing it requires nonce/SRI, which forces every page into
+        // dynamic rendering (loses static generation + CDN caching) — a poor
+        // trade for a catalog site. Revisit with SRI if stricter CSP is needed.
+        "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https:",
         "font-src 'self' https://fonts.gstatic.com",

@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Rate limit (30 read / minute / IP — brake-pad protection)
-  const { allowed } = rateLimit(`admin:users:${ip}`, 30, 60_000);
+  const { allowed } = await rateLimit(`admin:users:${ip}`, 30, 60_000);
   if (!allowed) {
     return NextResponse.json(
       { error: 'Too many requests. Please try again later.' },

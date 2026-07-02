@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getQuizRecommendations } from '@/lib/recommendations';
 import { rateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/server/request';
 
 const VALID_STYLES = ['minimalist', 'bold', 'classic', 'artistic'] as const;
 const VALID_OCCASIONS = ['self-reward', 'gift', 'milestone', 'everyday'] as const;
@@ -11,8 +12,8 @@ const VALID_BUDGETS = ['under-1k', '1k-3k', '3k-7k', '7k-plus'] as const;
 export async function POST(request: Request) {
   try {
     // Rate limit: 10 requests per minute per IP
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    const { allowed } = rateLimit(`quiz:${ip}`, 10, 60_000);
+    const ip = getClientIp(request);
+    const { allowed } = await rateLimit(`quiz:${ip}`, 10, 60_000);
     if (!allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
